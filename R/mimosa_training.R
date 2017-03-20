@@ -197,9 +197,6 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
     return(mimosa_fit_model)
   } 
   if (!is.null(optimal_threshold)){
-    #########
-    # I think we can lapply or mclapply to make this faster and take less memory?
-    ##########
     
     #initialize a storage matrix for DSC values
     dsc_mat = matrix(NA, nrow = length(train_data_all_list), ncol = length(optimal_threshold))
