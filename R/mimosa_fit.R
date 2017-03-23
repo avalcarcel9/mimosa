@@ -1,21 +1,11 @@
-#' @title Fits appropriate GLM model based on what image inputs are given
+#' @title MIMoSA Fit on Training Data
 #'
-#' @description Generates the MIMoSA model to create lesion probability maps, hard segementations in conjunction with mimosa_train_data
-#' @param formula formula to be used on model
-#' @param training_dataframe dataframe exported from mimosa_train_dataframe. list if training for multiple subjects
-#' @param optimal_threshold a vector of potential thresholds to be used in the optimal thresholding algorithm
-#' @param voxel_selection list of top voxels for subjects in training obtain from mimosa_train_dataframe or using top_voxel function in oasis package
-#' @param gold_standard is the gold standard nifti object in list form
+#' @description This function trains the MIMoSA model from a data.frame produced by an element from the output of the function mimosa_data.
+#' @param training_dataframe data.frame(s) produced by the mimosa_data function
+#' @param formula formula to be fit by glm model
 #' @export
-#' @import fslr 
-#' @import methods
-#' @import nuerobase
-#' @import oro.nifti
-#' @import parallel
-#' @import stats
-#' @import oasis
-#' @importFrom stats cov.wt qnorm
-#' @return GLM objects fit in the MIMoSA procedure and optimal threshold
+#' @importFrom stats glm
+#' @return Returns a glm object containing the trained MIMoSA coefficients.
 #' @examples \dontrun{
 #' 
 #'}

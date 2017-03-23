@@ -20,6 +20,7 @@
 #' @import parallel
 #' @import stats
 #' @import oasis
+#' #@import imco
 #' @importFrom stats cov.wt qnorm
 #' @return List of objects
 #' @examples \dontrun{
