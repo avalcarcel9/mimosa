@@ -1,18 +1,17 @@
-#' @title Dataframe to Train MIMoSA Model For Single Subject
+#' @title MIMoSA Training Data Frame
 #'
-#' @description Makes a dataframe to train, the tissue mask if desired, and coupling maps (intercepts and slopes) for all combos
-#' @param brain_mask local brain mask object
-#' @param FLAIR local FLAIR object
-#' @param T1 local T1 object
-#' @param T2 local T2 object if available. If not use NULL.
-#' @param PD local PD object if available. If not use NULL.
-#' @param tissue FALSE if brain mask is not the tissue mask (excludes CSF). TRUE if the brain_mask is the tissue mask.
-#' @param gold_standard Gold standard segmentations. Typically manually segemented images.
-#' @param normalize TRUE normalizes image inputs using z-score normalization
-#' @param slices NULL if full brain images are used
-#' @param orientation c("axial", "coronal", "sagittal")
-#' @param cores 1 is number of cores to be used
-#' @param verbose TRUE allows progress update as function runs
+#' @description This function creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes as well as binary masks of lesions. The function can create a tissue mask for the data (or the user can supply a brain mask), the candidate voxels for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method.
+#' @param brain_mask brain or tissue mask of class nifti
+#' @param FLAIR volume of class nifti
+#' @param T1 volume of class nifti
+#' @param T2 volume of class nifti. If not available use NULL.
+#' @param PD volume of class nifti. If not available use NULL.
+#' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
+#' @param normalize is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images
+#' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
+#' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
+#' @param cores 1 numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
+#' @param verbose logical indicating printing diagnostic output
 #' @export
 #' @import fslr 
 #' @import methods
@@ -22,7 +21,7 @@
 #' @import stats
 #' @import oasis
 #' @importFrom stats cov.wt qnorm
-#' @return List with dataframe prepared to be trained
+#' @return List of objects
 #' @examples \dontrun{
 #' 
 #'}
