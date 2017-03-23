@@ -1,39 +1,38 @@
-#' @title Train MIMoSA model using dataframe created from mimosa_data for entire training set
+#' @title Train MIMoSA model on full training set
 #'
-#' @description Generates the MIMoSA model to create lesion probability maps, hard segementations and optimal threshold
-#' @param brain_mask vector of brain mask paths
-#' @param FLAIR vector FLAIR paths
-#' @param T1 vector T1 paths
-#' @param T2 vector T2 paths if available. If not use NULL.
-#' @param PD vector PD paths if available. If not use NULL.
-#' @param tissue FALSE if brain mask is not the tissue mask (excludes CSF). TRUE if the brain_mask is the tissue mask.
-#' @param gold_standard Vector of paths to Gold standard segmentations. Typically manually segemented images.
+#' @description This function trains the MIMoSA model from the data frames produced by mimosa_data on all subjects and determines optimal threshold based on training data
+#' @param brain_mask vector of full path to brain mask
+#' @param FLAIR vector of full path to FLAIR
+#' @param T1 vector of full path to T1
+#' @param T2 vector of full path to T2 if available. If not use NULL.
+#' @param PD vector of full path to PD if available. If not use NULL.
+#' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
+#' @param gold_standard vector of full path to Gold standard segmentations. Typically manually segemented images.
 #' @param normalize TRUE normalizes image inputs using z-score normalization
-#' @param slices = NULL if full brain images are used
-#' @param orientation c("axial", "coronal", "sagittal") orientation of slices
-#' @param cores 1 is number of cores to be used
-#' @param verbose TRUE allows progress update as function runs
-#' @param outdir FALSE do not save results from mimosa_data TRUE save results
-#' @param outfile vector of paths/IDs to be pasted to objects that will be saved
-#' @param optimal_threshold NULL. To run algorithm then provide vector of thresholds
+#' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
+#' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
+#' @param cores numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
+#' @param verbose logical indicating printing diagnostic output
+#' @param outdir vector of paths/IDs to be pasted to objects that will be saved. NULL if objects are not to be saved
+#' @param optimal_threshold NULL. To run algorithm provide vector of thresholds
 #' @export
 #' @import fslr 
 #' @import methods
 #' @import nuerobase
 #' @import oro.nifti
 #' @import parallel
-#' @import stats
 #' @import oasis
-#' @importFrom stats cov.wt qnorm
-#' @return GLM objects fit in the MIMoSA procedure and optimal threshold
+#' @import extrantsr
+#' @importFrom stats cov.wt qnorm glm hi
+#' @return GLM objects fit in the MIMoSA procedure and optimal threshold evaluated for full training set
 #' @examples \dontrun{
 #' 
 #'}
 
 mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE, 
                             gold_standard, normalize = TRUE, slices = NULL, 
-                            orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE, outdir = FALSE, 
-                            outfile = NULL, optimal_threshold = NULL){
+                            orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE, outdir = NULL, 
+                            optimal_threshold = NULL){
   
   if(!(all.equal(length(brain_mask), length(FLAIR), length(T1), length(T2), length(PD)))){
     stop('path vectors do not match')
@@ -127,31 +126,31 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
     if(!is.null(outdir)){
       
       if (verbose) {
-        message(paste0('# Saving Subject Information for', outfile[i]))
+        message(paste0('# Saving Subject Information for', outdir[i]))
       }
       
       #write training dataframe for subject i
-      ###Put outfile first so that we have the path as specified and ID
+      ###Put outdir first so that we have the path as specified and ID
       
       #return the train dataframe
-      write.csv(train_data_i$mimosa_dataframe, file = paste0(outfile[i], '_mimosa_dataframe.csv'))
+      write.csv(train_data_i$mimosa_dataframe, file = paste0(outdir[i], '_mimosa_dataframe.csv'))
       #write top voxels for subject i
-      writenii(train_data_i$top_voxels, file = paste0(outfile[i], '_top_voxels'))
+      writenii(train_data_i$top_voxels, file = paste0(outdir[i], '_top_voxels'))
       #return the smoothed at 10 images
       for(j in 1:length(train_data_i$smoothed$smooth_10)){
-        writenii(train_data_i$smoothed$smooth_10[[j]], file = paste0(outfile[i], '_', names(train_data_i$smoothed$smooth_10)[j], '_smoothed'))
+        writenii(train_data_i$smoothed$smooth_10[[j]], file = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_10)[j], '_smoothed'))
       }
       #return the smoothed at 20 images
       for(j in 1:length(train_data_i$smoothed$smooth_20)){
-        writenii(train_data_i$smoothed$smooth_20[[j]], file = paste0(outfile[i], '_', names(train_data_i$smoothed$smooth_20)[j], '_smoothed'))
+        writenii(train_data_i$smoothed$smooth_20[[j]], file = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_20)[j], '_smoothed'))
       }
       #return the coupling intercept images
       for(j in 1:length(train_data_i$coupling_intercepts)){
-        writenii(train_data_i$coupling_intercepts[[j]], file = paste0(outfile[i], '_coupling_', names(train_data_i$coupling_intercepts)[j]))
+        writenii(train_data_i$coupling_intercepts[[j]], file = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_intercepts)[j]))
       }
       #return the slope images
       for(j in 1:length(train_data_i$coupling_slopes)){
-        writenii(train_data_i$coupling_slopes[[j]], file = paste0(outfile[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
+        writenii(train_data_i$coupling_slopes[[j]], file = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
       }
       ##Return normalized and/or tissue depending on inputs
       if(normalize == TRUE & tissue == TRUE){
@@ -159,23 +158,23 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
         ##the tissue mask in this case return the normalized images but they have the tissue mask so do not return
         #normalized images
         for(j in 1:length(train_data_i$normalized)){
-          writenii(train_data_i$normalized[[j]], file = paste0(outfile[i], '_', names(train_data_i$normalized)[j], '_norm'))
+          writenii(train_data_i$normalized[[j]], file = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
       }
       if(normalize == FALSE & tissue == FALSE){
         #if normalize is FALSE then we normalize images if tissue is false we find the tissue mask
         ##return tissue
-        writenii(train_data_i$tissue_mask, file = paste0(outfile[i], '_tissue_mask'))
+        writenii(train_data_i$tissue_mask, file = paste0(outdir[i], '_tissue_mask'))
       }
       if(normalize == TRUE & tissue == FALSE){
         #if normalize is true then images are normalized, if tissue is false then we find the tissue mask
         ##return both
         #normalized images
         for(j in 1:length(train_data_i$normalized)){
-          writenii(train_data_i$normalized[[j]], file = paste0(outfile[i], '_', names(train_data_i$normalized)[j], '_norm'))
+          writenii(train_data_i$normalized[[j]], file = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
         #tissue mask
-        writenii(train_data_i$tissue_mask, file = paste0(outfile[i], '_tissue_mask'))
+        writenii(train_data_i$tissue_mask, file = paste0(outdir[i], '_tissue_mask'))
         
       }
     }
@@ -197,6 +196,9 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
     return(mimosa_fit_model)
   } 
   if (!is.null(optimal_threshold)){
+    #########
+    # I think we can lapply or mclapply to make this faster and take less memory?
+    ##########
     
     #initialize a storage matrix for DSC values
     dsc_mat = matrix(NA, nrow = length(train_data_all_list), ncol = length(optimal_threshold))
