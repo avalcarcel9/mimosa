@@ -7,6 +7,7 @@
 #' @param T2 volume of class nifti. If not available use NULL.
 #' @param PD volume of class nifti. If not available use NULL.
 #' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
+#' @param gold_standard gold standard lesion segmentation mask of class nifti
 #' @param normalize is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images
 #' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
 #' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
