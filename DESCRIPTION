@@ -1,11 +1,11 @@
 Package: mimosa
 Type: Package
-Title: What the Package Does (Title Case)
+Title: MIMoSA: A Method for Inter-Modal Segmentation Analysis
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
+Author: Alessandra Valcarcel
+Maintainer: Alessandra Valcarcel <alval@mail.med.upenn.edu>
+Description: Trains and makes predictions from the MIMoSA method
+Imports:
+  ANTsR
+License: GPL-2
+RoxygenNote: 5.0.1

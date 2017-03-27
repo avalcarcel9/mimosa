@@ -6,13 +6,12 @@
 #' @param brainMask Full path to brain mask
 #' @param ref reference modality or dependent modality when type="regression"
 #' @param neighborhoodSize Full width in voxels for FWHM
-#' @export
 #' @import ANTsR
 #' @import extrantsr
 #' @import rlist
 #' @return Data frame
 #' @examples \dontrun{
-#' 
+#'
 #'}
 imco_single <- function(files, vxl, brainMask, ref=1, neighborhoodSize=3){
   if(!(as.integer(neighborhoodSize)==neighborhoodSize)){
@@ -46,8 +45,8 @@ imco_single <- function(files, vxl, brainMask, ref=1, neighborhoodSize=3){
   # Assign anything outside brain mask to NA
   fileList = lapply(fileList, function(x){newx = x; newx[bMask==0] = NA; return(newx)})
   ######################################
-  # FWHM => sigma 
-  # Note: We specify FWHM in terms of number of 
+  # FWHM => sigma
+  # Note: We specify FWHM in terms of number of
   #       voxels along the axis of smallest size (mm).
   #       Thus, the neighborhood is specified in terms
   #       of a univariate Gaussian but the weights are
@@ -59,7 +58,7 @@ imco_single <- function(files, vxl, brainMask, ref=1, neighborhoodSize=3){
     stop('neighborhoodSize must be odd integer')
   }
   width = neighborhoodSize*minDim
-  # Need sigma for specifying Guassian kernel 
+  # Need sigma for specifying Guassian kernel
   sigma = width/(2*sqrt(2*log(2)))
   # We will choose a radius based on quantile (mm) of univariate normal
   lower = qnorm(.005, sd=sigma)

@@ -14,22 +14,21 @@
 #' @param cores 1 numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
 #' @param verbose logical indicating printing diagnostic output
 #' @export
-#' @import fslr 
+#' @import fslr
 #' @import methods
 #' @import nuerobase
 #' @import oro.nifti
 #' @import parallel
 #' @import stats
 #' @import oasis
-#' #@import imco
 #' @importFrom stats cov.wt qnorm
 #' @return List of objects
 #' @examples \dontrun{
-#' 
+#'
 #'}
 
-mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE, 
-                                    gold_standard = NULL, normalize = TRUE, slices = NULL, 
+mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
+                                    gold_standard = NULL, normalize = TRUE, slices = NULL,
                                     orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE) {
   if (verbose) {
     message("# Checking File inputs")
@@ -56,14 +55,14 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
       return(correct_image_dim(x))
     }
   }
-  
+
   #correct image dim in case originals are weird
   FLAIR = correct_image_dim2(FLAIR)
   T1 = correct_image_dim2(T1)
   T2 = correct_image_dim2(T2)
   PD = correct_image_dim2(PD)
   gold_standard = correct_image_dim2(gold_standard)
-  
+
   #if brain_mask is the tissue mask then just check nifti, make sure 0,1,and correct image dim
   #if brain_mask is not tissue mask then we create the tissue mask
   if(tissue == TRUE){
@@ -76,49 +75,49 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     if(verbose){
       message("# Getting Tissue Mask")
     }
-    ero_brain_mask = fslerode(brain_mask, kopts = "-kernel box 5x5x5", 
+    ero_brain_mask = fslerode(brain_mask, kopts = "-kernel box 5x5x5",
                               retimg = TRUE)
     tissue_mask = voxel_selection(flair = FLAIR, brain_mask = ero_brain_mask, cutoff = 0.15)
   }
   #make a list of the images
-  mimosa_data = list(FLAIR = FLAIR, T1 = T1, T2 = T2, 
+  mimosa_data = list(FLAIR = FLAIR, T1 = T1, T2 = T2,
                      PD = PD)
   rm(list = c("FLAIR","T1", "T2", "PD", "brain_mask"))
-  
+
   #remove null values in case T2 or PD is null
   nulls = sapply(mimosa_data, is.null)
   mimosa_data = mimosa_data[!nulls]
-  
+
   #normalize by z-score approach if specified
   if (normalize == TRUE) {
     if (verbose) {
       message("# Normalizing Images using Z-score")
     }
-    mimosa_data = lapply(mimosa_data, zscore_img, mask = tissue_mask, 
+    mimosa_data = lapply(mimosa_data, zscore_img, mask = tissue_mask,
                          margin = NULL)
-    
+
     normalized = mimosa_data
     nulls = sapply(normalized, is.null)
     normalized = normalized[!nulls]
   }
-  
+
   #obtain candidate voxels/candidate mask
   if (verbose) {
     message("# Voxel Selection Procedure")
   }
-  top_voxels = voxel_selection(flair = mimosa_data$FLAIR, 
+  top_voxels = voxel_selection(flair = mimosa_data$FLAIR,
                                brain_mask = tissue_mask, cutoff = 0.85)
   if (verbose) {
     message("# Smoothing Images: Sigma = 10")
   }
   #obtain smoothed at 10 images
-  smooth_10 = mclapply(mimosa_data, fslsmooth, sigma = 10, mask = tissue_mask, 
+  smooth_10 = mclapply(mimosa_data, fslsmooth, sigma = 10, mask = tissue_mask,
                        retimg = TRUE, smooth_mask = TRUE, mc.cores = cores)
   if (verbose) {
     message("# Smoothing Images: Sigma = 20")
   }
   #obtain smoothed at 20 images
-  smooth_20 = mclapply(mimosa_data, fslsmooth, sigma = 20, mask = tissue_mask, 
+  smooth_20 = mclapply(mimosa_data, fslsmooth, sigma = 20, mask = tissue_mask,
                        retimg = TRUE, smooth_mask = TRUE, mc.cores = cores)
   #add smoothed images to the mimosa_data list with proper names
   img_names = names(mimosa_data)
@@ -136,33 +135,33 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
   combos = combn(img_names, 2)
   combos = cbind(combos, rbind(combos[2,], combos[1,]))
   list_names = as.data.frame(matrix(nrow = 1, ncol = dim(combos)[2]))
-  
+
   #run coupling on all possible combinations of images
   if (verbose) {
     message("# Running Coupling")
   }
-  
+
   for(i in 1:dim(combos)[2]){
-    
-    temp_files = list(eval(parse(text = paste0('mimosa_data$', combos[1,i]))), 
+
+    temp_files = list(eval(parse(text = paste0('mimosa_data$', combos[1,i]))),
                       eval(parse(text = paste0('mimosa_data$', combos[2,i]))))
-    temp_return = imco(files=temp_files, brainMask=tissue_mask, subMask=top_voxels, type="regression", 
+    temp_return = imco(files=temp_files, brainMask=tissue_mask, subMask=top_voxels, type="regression",
                        ref=1, neighborhoodSize=3, verbose=TRUE, retimg=TRUE, outDir=NULL)
-    
+
     # Regress Y on X so var names will be YonX_int and YonX_slope
     list_names[i] = paste0(combos[1,i], 'on' , combos[2,i])
     coupling_intercepts[[i]] = temp_return$intercept
     coupling_slopes[[i]] = temp_return$slopes[[1]]
-    
+
     if (verbose) {
       message(paste0('# Ran Coupling for ', combos[1,i], ' on ' , combos[2,i], ' Successfuly'))
     }
   }
-  
+
   #rename coupling lists before appending with mimosa_data
   names(coupling_intercepts) = paste0(list_names, '_intercepts')
   names(coupling_slopes) = paste0(list_names, '_slopes')
-  
+
   #append data
   mimosa_data = append(mimosa_data, coupling_intercepts)
   mimosa_data = append(mimosa_data, coupling_slopes)
@@ -179,7 +178,7 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
   colnames(inds) = c("axial", "coronal", "sagittal")
   mimosa_dataframe = as.data.frame(cbind(inds, mimosa_dataframe))
   mimosa_dataframe$top_voxels = NULL
-  
+
   #allow for slice images
   if (!is.null(slices)) {
     orientation = match.arg(orientation)
@@ -190,32 +189,31 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
   if(normalize == FALSE & tissue == TRUE){
     #if normalize = FALSE we do not normalize, if tissue = true we treat the brain mask as the tissue_mask
     ##in this case do not return normalized images or the tissue mask as user already has them
-    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed, 
+    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes))
   }
-  
+
   if(normalize == TRUE & tissue == TRUE){
     #if normalize is true then we normalize the images provided, if tissue is true we treat the brain mask as
     ##the tissue mask in this case return the normalized images but they have the tissue mask so do not return
-    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed, 
-                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes, 
+    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
+                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
                 normalized = normalized))
   }
   if(normalize == FALSE & tissue == FALSE){
     #if normalize is FALSE then we normalize images if tissue is false we find the tissue mask
     ##return only tissue
-    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed, 
-                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes, 
+    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
+                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
                 tissue_mask = tissue_mask))
     }
   if(normalize == TRUE & tissue == FALSE){
     #if normalize is true then images are normalized, if tissue is false then we find the tissue mask
     ##return both
-    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed, 
-                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes, 
-                normalized = normalized, tissue_mask = tissue_mask))  
+    return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
+                coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
+                normalized = normalized, tissue_mask = tissue_mask))
     }
 }
 
-  
-  
+
