@@ -28,7 +28,7 @@
 #'}
 
 mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-                                    gold_standard = NULL, normalize = TRUE, slices = NULL,
+                                    gold_standard = NULL, normalize = TRUE, cand_mask = NULL, slices = NULL,
                                     orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE) {
   if (verbose) {
     message("# Checking File inputs")
@@ -100,13 +100,19 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     nulls = sapply(normalized, is.null)
     normalized = normalized[!nulls]
   }
-
+  
   #obtain candidate voxels/candidate mask
   if (verbose) {
     message("# Voxel Selection Procedure")
   }
-  top_voxels = voxel_selection(flair = mimosa_data$FLAIR,
-                               brain_mask = tissue_mask, cutoff = 0.85)
+  if(is.null(cand_mask)){
+    top_voxels = voxel_selection(flair = mimosa_data$FLAIR,
+                                 brain_mask = tissue_mask, cutoff = 0.85)
+  } else if(!is.null(cand_mask)){
+    cand_mask = check_nifti(cand_mask)
+    top_voxels = cand_mask
+  }
+  
   if (verbose) {
     message("# Smoothing Images: Sigma = 10")
   }
