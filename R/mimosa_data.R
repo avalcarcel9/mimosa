@@ -160,7 +160,7 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     coupling_slopes[[i]] = temp_return$slopes[[1]]
 
     if (verbose) {
-      message(paste0('# Ran Coupling for ', combos[1,i], ' on ' , combos[2,i], ' Successfuly'))
+      message(paste0('# Ran Coupling for ', combos[1,i], ' on ' , combos[2,i], ' Successfully'))
     }
   }
 
