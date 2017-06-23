@@ -16,14 +16,10 @@
 #' @param outdir vector of paths/IDs to be pasted to objects that will be saved. NULL if objects are not to be saved
 #' @param optimal_threshold NULL. To run algorithm provide vector of thresholds
 #' @export
-#' @import fslr
-#' @import methods
-#' @import nuerobase
-#' @import oro.nifti
-#' @import parallel
-#' @import oasis
-#' @import extrantsr
-#' @importFrom stats cov.wt qnorm glm
+#' @importFrom neurobase writenii niftiarr
+#' @importFrom data.table rbindlist
+#' @importFrom stats predict
+#' @importFrom fslr fslsmooth
 #' @return GLM objects fit in the MIMoSA procedure and optimal threshold evaluated for full training set
 #' @examples \dontrun{
 #'

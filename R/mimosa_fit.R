@@ -3,6 +3,7 @@
 #' @description This function trains the MIMoSA model from a data.frame produced by an element from the output of the function mimosa_data.
 #' @param training_dataframe data.frame(s) produced by the mimosa_data function
 #' @param formula formula to be fit by glm model
+#' @export
 #' @importFrom stats glm
 #' @return Returns a glm object containing the trained MIMoSA coefficients.
 #' @examples \dontrun{

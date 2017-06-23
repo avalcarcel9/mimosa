@@ -9,19 +9,18 @@
 #' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
 #' @param gold_standard gold standard lesion segmentation mask of class nifti
 #' @param normalize is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images
+#' @param cand_mask is NULL to use candidate mask procedure proposed with method or a nifti object to be used as the candidate mask
 #' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
 #' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
 #' @param cores 1 numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
 #' @param verbose logical indicating printing diagnostic output
 #' @export
-#' @import fslr
-#' @import methods
-#' @import nuerobase
-#' @import oro.nifti
-#' @import parallel
-#' @import stats
-#' @import oasis
+#' @importFrom fslr fslerode
+#' @importFrom neurobase check_nifti datatyper niftiarr
+#' @importFrom parallel mclapply
+#' @importFrom oasis voxel_selection correct_image_dim
 #' @importFrom stats cov.wt qnorm
+#' @importFrom utils combn
 #' @return List of objects
 #' @examples \dontrun{
 #'
@@ -152,7 +151,7 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     temp_files = list(eval(parse(text = paste0('mimosa_data$', combos[1,i]))),
                       eval(parse(text = paste0('mimosa_data$', combos[2,i]))))
     temp_return = imco(files=temp_files, brainMask=tissue_mask, subMask=top_voxels, type="regression",
-                       ref=1, neighborhoodSize=3, verbose=TRUE, retimg=TRUE, outDir=NULL)
+                       ref=1, neighborhoodSize=3, verbose=verbose, retimg=TRUE, outDir=NULL)
 
     # Regress Y on X so var names will be YonX_int and YonX_slope
     list_names[i] = paste0(combos[1,i], 'on' , combos[2,i])
