@@ -16,7 +16,7 @@
 #' @param outdir vector of paths/IDs to be pasted to objects that will be saved. NULL if objects are not to be saved
 #' @param optimal_threshold NULL. To run algorithm provide vector of thresholds
 #' @export
-#' @importFrom neurobase writenii niftiarr
+#' @importFrom neurobase writenii readnii niftiarr
 #' @importFrom data.table rbindlist
 #' @importFrom stats predict
 #' @importFrom fslr fslsmooth
@@ -131,22 +131,22 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
       #return the train dataframe
       write.csv(train_data_i$mimosa_dataframe, file = paste0(outdir[i], '_mimosa_dataframe.csv'))
       #write top voxels for subject i
-      writenii(train_data_i$top_voxels, file = paste0(outdir[i], '_top_voxels'))
+      writenii(train_data_i$top_voxels, filename = paste0(outdir[i], '_top_voxels'))
       #return the smoothed at 10 images
       for(j in 1:length(train_data_i$smoothed$smooth_10)){
-        writenii(train_data_i$smoothed$smooth_10[[j]], file = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_10)[j], '_smoothed'))
+        writenii(train_data_i$smoothed$smooth_10[[j]], filename = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_10)[j], '_smoothed'))
       }
       #return the smoothed at 20 images
       for(j in 1:length(train_data_i$smoothed$smooth_20)){
-        writenii(train_data_i$smoothed$smooth_20[[j]], file = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_20)[j], '_smoothed'))
+        writenii(train_data_i$smoothed$smooth_20[[j]], filename = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_20)[j], '_smoothed'))
       }
       #return the coupling intercept images
       for(j in 1:length(train_data_i$coupling_intercepts)){
-        writenii(train_data_i$coupling_intercepts[[j]], file = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_intercepts)[j]))
+        writenii(train_data_i$coupling_intercepts[[j]], filename = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_intercepts)[j]))
       }
       #return the slope images
       for(j in 1:length(train_data_i$coupling_slopes)){
-        writenii(train_data_i$coupling_slopes[[j]], file = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
+        writenii(train_data_i$coupling_slopes[[j]], filename = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
       }
       ##Return normalized and/or tissue depending on inputs
       if(normalize == TRUE & tissue == TRUE){
@@ -154,23 +154,23 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
         ##the tissue mask in this case return the normalized images but they have the tissue mask so do not return
         #normalized images
         for(j in 1:length(train_data_i$normalized)){
-          writenii(train_data_i$normalized[[j]], file = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
+          writenii(train_data_i$normalized[[j]], filename = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
       }
       if(normalize == FALSE & tissue == FALSE){
         #if normalize is FALSE then we normalize images if tissue is false we find the tissue mask
         ##return tissue
-        writenii(train_data_i$tissue_mask, file = paste0(outdir[i], '_tissue_mask'))
+        writenii(train_data_i$tissue_mask, filename = paste0(outdir[i], '_tissue_mask'))
       }
       if(normalize == TRUE & tissue == FALSE){
         #if normalize is true then images are normalized, if tissue is false then we find the tissue mask
         ##return both
         #normalized images
         for(j in 1:length(train_data_i$normalized)){
-          writenii(train_data_i$normalized[[j]], file = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
+          writenii(train_data_i$normalized[[j]], filename = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
         #tissue mask
-        writenii(train_data_i$tissue_mask, file = paste0(outdir[i], '_tissue_mask'))
+        writenii(train_data_i$tissue_mask, filename = paste0(outdir[i], '_tissue_mask'))
 
       }
     }
