@@ -11,8 +11,7 @@
 #' @examples \dontrun{
 #' 
 #'}
-
-weighted_slr = function(x, y, wts, mInds, refImg) {
+weighted_slr <- function(x, y, wts, mInds, refImg) {
 	cs = function(x) {
 		colSums(x, na.rm = TRUE)
 	}

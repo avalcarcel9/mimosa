@@ -9,7 +9,6 @@
 #' @examples \dontrun{
 #' 
 #'}
-
 get_weights <- function(offsets, voxelDims, sigma){
     dists = t(apply(offsets, 1, function(x, y) x*y, y=voxelDims))
     sqNorm = apply(dists*dists, 1, function(x) sum(x))

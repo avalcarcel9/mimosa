@@ -19,18 +19,17 @@
 #' @examples \dontrun{
 #' 
 #'}
-
-imco_reg = function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
+imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
 	if(verbose){
 		cat("# Computing weighted regressions \n")
 	}
 	if(length(files)==2 & reverse){
 		if(ref==1){
- 			x = nhoods[[1]]$values
- 			y = nhoods[[2]]$values
- 		} else{
  			x = nhoods[[2]]$values
  			y = nhoods[[1]]$values
+ 		} else{
+ 			x = nhoods[[1]]$values
+ 			y = nhoods[[2]]$values
  		}
  		params = weighted_slr(x=x, y=y, wts=nWts, mInds=mask_indices, refImg=files[[1]])
  		if(!is.null(outDir)){

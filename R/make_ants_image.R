@@ -9,7 +9,6 @@
 #' @examples \dontrun{
 #' 
 #'}
-
 make_ants_image = function(vec, mask_indices, reference){
 	arr = array(0, dim=dim(reference))
 	arr[mask_indices] = vec
