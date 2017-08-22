@@ -13,7 +13,7 @@
 mimosa_fit <- function(training_dataframe, formula) {
 
   mimosa_model = glm(formula = formula, data = training_dataframe,
-                      family = binomial)
+                      family = binomial(link = logit))
   mimosa_model$y = c()
   mimosa_model$model = c()
   mimosa_model$residuals = c()
