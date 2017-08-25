@@ -5,29 +5,32 @@
 \title{Inter-modal Coupling Model}
 \usage{
 imco(files, brainMask, subMask = NULL, type = "pca", ref = 1,
-  neighborhoodSize = 3, verbose = TRUE, retimg = FALSE, outDir = NULL)
+  neighborhoodSize = 3, reverse = TRUE, verbose = TRUE, retimg = FALSE,
+  outDir = NULL)
 }
 \arguments{
-\item{files}{Vector of full paths to images}
+\item{files}{Vector of full paths to images or a list of local nifti objects}
 
-\item{brainMask}{Full path to brain mask}
+\item{brainMask}{Full path to brain mask or local nifti object}
 
-\item{subMask}{NULL or full path subset of brain mask where coupling should be computed}
+\item{subMask}{NULL or local nifti object or the full path to a mask that is a subset of brain mask where coupling should be computed}
 
 \item{type}{"regression" or "pca"}
 
-\item{ref}{reference modality or dependent modality when type="regression"}
+\item{ref}{reference modality when type="pca" or dependent modality when type="regression"}
 
 \item{neighborhoodSize}{Full width in voxels for FWHM}
 
-\item{verbose}{TRUE for progress bar}
+\item{reverse}{If TRUE, calculates both regressions if type="regression" and length(files)==2, otherwise ignored}
 
-\item{retimg}{If TRUE, return list of estimated coupling maps}
+\item{verbose}{TRUE for updates on computation, else FALSE}
+
+\item{retimg}{If TRUE, return list of estimated coupling maps as nifti objects}
 
 \item{outDir}{Full path to directory where maps should be written}
 }
 \value{
-Estimated IMCo coupling maps, either written to files and/or returned as antsImage objects
+Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
 }
 \description{
 Implements full volumetric IMCo coupling estimation on a single subject
@@ -37,4 +40,3 @@ Implements full volumetric IMCo coupling estimation on a single subject
 
 }
 }
-

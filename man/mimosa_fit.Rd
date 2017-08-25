@@ -22,4 +22,3 @@ This function trains the MIMoSA model from a data.frame produced by an element f
 
 }
 }
-

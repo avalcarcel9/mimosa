@@ -5,9 +5,9 @@
 \title{MIMoSA Training Data Frame}
 \usage{
 mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-  gold_standard = NULL, normalize = TRUE, slices = NULL,
-  orientation = c("axial", "coronal", "sagittal"), cores = 1,
-  verbose = TRUE)
+  gold_standard = NULL, normalize = TRUE, cand_mask = NULL,
+  slices = NULL, orientation = c("axial", "coronal", "sagittal"),
+  cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{brain_mask}{brain or tissue mask of class nifti}
@@ -25,6 +25,8 @@ mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
 \item{gold_standard}{gold standard lesion segmentation mask of class nifti}
 
 \item{normalize}{is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images}
+
+\item{cand_mask}{is NULL to use candidate mask procedure proposed with method or a nifti object to be used as the candidate mask}
 
 \item{slices}{vector of desired slices to train on, if NULL then train over the entire brain mask}
 
@@ -45,4 +47,3 @@ This function creates the training vectors from a single MRI study that has FLAI
 
 }
 }
-

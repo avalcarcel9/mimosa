@@ -1,0 +1,512 @@
+for(k in 1:length(unique(temp_lesion$voxel_ID))){
+temp_time = subset(temp_lesion, temp_lesion$voxel_ID == k)
+#initalize an empty matrix to store wide data
+#matrix(as.matrix(interpolated_list[[1]][[1]][interpolated_list[[1]][[1]]$voxel_ID==1,][,7:10]),nrow=1)
+lesion_wide = rbind(lesion_wide, matrix(as.matrix(temp_time[,7:10]), nrow = 1))
+}
+rownames(lesion_wide) = 1:length(which(temp_lesion$int_time ==0))
+lesion_wide = cbind(subset(temp_cov, temp_cov$aligned_time==0), lesion_wide)
+lesions_df_wide = rbind(lesions_df_wide, lesion_wide)
+}
+PCA_data[[i]] = as.data.frame(lesions_df_wide)
+}
+}
+}
+load('/Volumes/microsd/long_project/data/PCA_data.RData')
+PCA_data[1,]
+PCA_data[[1]][1,]
+PCA_df = rbindlist(PCA_data)
+library(data.table)
+PCA_df = rbindlist(PCA_data)
+PCA_df[1,]
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+#extract PCA df from interplated data and de-mean
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+PCA_df = PCA_df - colMeans(PCA_df)
+#decomposition
+#first column of us is biomarker
+#first column of v is plot in paper
+decomp = svd(PCA_df)
+plot(PCA_df[1,])
+plot(1:164,PCA_df[1,])
+PCA_df = rbindlist(PCA_data)
+plot(1:164,PCA_df[1,])
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+#extract PCA df from interplated data and de-mean
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+plot(1:164,PCA_df[1,])
+colMeans(PCA_df)
+cbind(c(1,2,3),c(2,3,4))-c(1,2,3)
+cbind(c(1,2,3),c(2,3,4))-c(1,2)
+t(cbind(c(1,2,3),c(2,3,4)))-t(c(1,2))
+t(cbind(c(1,2,3),c(2,3,4)))-c(1,2)
+t(cbind(c(1,2,3),c(2,3,4)))
+t(cbind(c(1,2,3),c(2,3,4)))-c(1,2)
+dim(PCA_df)
+length(colMeans(PCA_df))
+?%-%
+cbind(c(1,2,3),c(2,3,4))
+cbind(c(1,2,3),c(2,3,4))-c(1,2)
+t(t(cbind(c(1,2,3),c(2,3,4)))-c(1,2))
+PCA_df = t(t(PCA_df) - colMeans(PCA_df))
+plot(1:164,PCA_df[1,])
+PCA_df = rbindlist(PCA_data)
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+#extract PCA df from interplated data and de-mean
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+plot(1:164,PCA_df[1,])
+PCA_df = t(t(PCA_df) - colMeans(PCA_df))
+plot(1:164,PCA_df[1,])
+colMeans(PCA_df)
+PCA_df = rbindlist(PCA_data)
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+cmeans<- colMeans(PCA_df)
+plot(1:164,cmeans)
+PCA_df = t(t(PCA_df) -cmeans)
+plot(1:164,PCA_df[1,])
+PCA_df = rbindlist(PCA_data)
+PCA_df = rbindlist(PCA_data)
+PCA_df = rbindlist(PCA_data)
+save(PCA_df, file = '/Volumes/microsd/long_project/data/PCA_df.RData')
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+cmeans<- colMeans(PCA_df)
+PCA_df_demeaned = t(t(PCA_df) -cmeans)
+par(mfrow=c(3,1))
+plot(1:164,cmeans)
+plot(1:164,PCA_df[1,])
+plot(1:164,PCA_df_demeaned[1,])
+decomp = svd(PCA_df)
+plot(1:164,PCA_df$v[,1])
+PCA_df$v[,1]
+plot(1:164,decomp$v[,1])
+#make covariate or model data
+PCA_cov = cbind(PCA_cov, decomp$u[,1])
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+save(decomp, file = '/Volumes/microsd/long_project/data/decomp.RData')
+#Need unique lesion ID
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+summary(test)
+plot(1:164,PCA_df_demeaned[1,])
+plot(1:164,u[1,]%*%decomp$v)
+plot(1:164,decomp$u[1,]%*%decomp$v)
+plot(1:164,decomp$u[1,]%*%decomp$v,type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)%*%decomp$v,type='l')
+(PCA_df_demeaned[1,]%*%decomp$v)
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:3]%*%decomp$v[,1:3],type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:3]%*%decomp$v[1:3,],type='l')
+dim(decomp$v)
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:3]%*%t(decomp$v[,1:3]),type='l')
+plot(1:164,u[1,]%*%t(decomp$v))
+plot(1:164,decomp$u[1,]%*%t(decomp$v))
+plot(1:164,decomp$u[1,1:10]%*%t(decomp$v[,1:10]))
+plot(1:164,PCA_df_demeaned[1,])
+plot(1:164,decomp$u[1,1:10]%*%t(decomp$v[,1:10]))
+plot(1:164,PCA_df_demeaned[1,])
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:3]%*%t(decomp$v[,1:3]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,decomp$u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,decomp$u[1,1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(u[,1]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(decomp$u[,1]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(decomp$u[,1])%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,t(decomp$u[,1])%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,t(decomp$u[1:10,1])%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,t(decomp$u[1:10,1])%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+summary(test)
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,PCA_df_demeaned[1,])
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1:10]%*%t(decomp$v[,1:10]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)%*%t(decomp$v),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v)[1]%*%t(decomp$v[,1]),type='l')
+plot(1:164,(PCA_df_demeaned[1,]%*%decomp$v[,1])%*%t(decomp$v[,1]),type='l')
+plot(1:164,(PCA_df_demeaned%*%decomp$v[,1])[1,]%*%t(decomp$v[,1]),type='l')
+(PCA_df_demeaned%*%decomp$v[,1])[1,]
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+save(decomp, file = '/Volumes/microsd/long_project/data/decomp.RData')
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+lme_data[1:10,]
+(PCA_df_demeaned%*%decomp$v[,1])
+head((PCA_df_demeaned%*%decomp$v[,1]))
+head(PCA_cov)
+#make covariate or model data
+#PCA_cov = cbind(PCA_cov, decomp$u[,1])
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+head(PCA_cov)
+PCA_cov$biomarker<-(PCA_df_demeaned%*%decomp$v[,1])
+save(PCA_cov, file = '/Volumes/microsd/long_project/data/PCA_cov.RData')
+count = 1
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+summary(test)
+load('/Volumes/microsd/long_project/data/interpolated_list.RData')
+load('/Volumes/microsd/long_project/data/final_covariates.RData')
+#matrix(as.matrix(interpolated_list[[1]][[1]][interpolated_list[[1]][[1]]$voxel_ID==1,][,7:10]),nrow=1)
+#to do PCA to obtain biomarker we must transpose the matrix sort of
+PCA_data = list()
+for(i in 1:length(interpolated_list)){
+subject_i = interpolated_list[[i]]
+subject_i_cov = final_covariates[[i]]
+lesions_df_wide = matrix(NA, nrow = 1, ncol = length(seq(0,200, 5))*4)
+lesions_df_wide = lesions_df_wide[-1,]
+names_flair = paste0(seq(0,200, 5), '_flair')
+names_t1 = paste0(seq(0,200, 5), '_t1')
+names_t2 = paste0(seq(0,200, 5), '_t2')
+names_pd = paste0(seq(0,200, 5), '_pd')
+colnames(lesions_df_wide) = cbind(names_flair, names_t1, names_t2, names_pd)
+for(j in 1:length(subject_i)){
+if(length(subject_i)>0){
+temp_lesion = subject_i[[j]]
+temp_cov = subject_i_cov[[j]]
+if(!is.null(temp_lesion)){
+#initalize an empty matrix to store wide data
+lesion_wide = matrix(NA, nrow = 1, ncol = length(seq(0,200, 5))*4)
+lesion_wide = lesion_wide[-1,]
+names_flair = paste0(seq(0,200, 5), '_flair')
+names_t1 = paste0(seq(0,200, 5), '_t1')
+names_t2 = paste0(seq(0,200, 5), '_t2')
+names_pd = paste0(seq(0,200, 5), '_pd')
+colnames(lesion_wide) = cbind(names_flair, names_t1, names_t2, names_pd)
+for(k in 1:length(unique(temp_lesion$voxel_ID))){
+temp_time = subset(temp_lesion, temp_lesion$voxel_ID == k)
+#initalize an empty matrix to store wide data
+#matrix(as.matrix(interpolated_list[[1]][[1]][interpolated_list[[1]][[1]]$voxel_ID==1,][,7:10]),nrow=1)
+lesion_wide = rbind(lesion_wide, matrix(as.matrix(temp_time[,7:10]), nrow = 1))
+}
+rownames(lesion_wide) = 1:length(which(temp_lesion$int_time ==0))
+lesion_wide = cbind(subset(temp_cov, temp_cov$aligned_time==0), lesion_wide)
+lesions_df_wide = rbind(lesions_df_wide, lesion_wide)
+}
+PCA_data[[i]] = as.data.frame(lesions_df_wide)
+}
+}
+}
+load('/Volumes/microsd/long_project/data/interpolated_list.RData')
+load('/Volumes/microsd/long_project/data/final_covariates.RData')
+PCA_data = list()
+for(i in 1:length(interpolated_list)){
+subject_i = interpolated_list[[i]]
+subject_i_cov = final_covariates[[i]]
+lesions_df_wide = matrix(NA, nrow = 1, ncol = length(seq(0,200, 5))*4)
+lesions_df_wide = lesions_df_wide[-1,]
+names_flair = paste0(seq(0,200, 5), '_flair')
+names_t1 = paste0(seq(0,200, 5), '_t1')
+names_t2 = paste0(seq(0,200, 5), '_t2')
+names_pd = paste0(seq(0,200, 5), '_pd')
+colnames(lesions_df_wide) = cbind(names_flair, names_t1, names_t2, names_pd)
+for(j in 1:length(subject_i)){
+if(length(subject_i)>0){
+temp_lesion = subject_i[[j]]
+temp_cov = subject_i_cov[[j]]
+if(!is.null(temp_lesion)){
+#initalize an empty matrix to store wide data
+lesion_wide = matrix(NA, nrow = 1, ncol = length(seq(0,200, 5))*4)
+lesion_wide = lesion_wide[-1,]
+names_flair = paste0(seq(0,200, 5), '_flair')
+names_t1 = paste0(seq(0,200, 5), '_t1')
+names_t2 = paste0(seq(0,200, 5), '_t2')
+names_pd = paste0(seq(0,200, 5), '_pd')
+colnames(lesion_wide) = cbind(names_flair, names_t1, names_t2, names_pd)
+for(k in 1:length(unique(temp_lesion$voxel_ID))){
+temp_time = subset(temp_lesion, temp_lesion$voxel_ID == k)
+#initalize an empty matrix to store wide data
+#matrix(as.matrix(interpolated_list[[1]][[1]][interpolated_list[[1]][[1]]$voxel_ID==1,][,7:10]),nrow=1)
+lesion_wide = rbind(lesion_wide, matrix(as.matrix(temp_time[,7:10]), nrow = 1))
+}
+rownames(lesion_wide) = 1:length(which(temp_lesion$int_time ==0))
+lesion_wide = cbind(subset(temp_cov, temp_cov$aligned_time==0), lesion_wide)
+lesions_df_wide = rbind(lesions_df_wide, lesion_wide)
+}
+PCA_data[[i]] = as.data.frame(lesions_df_wide)
+}
+}
+}
+PCA_df = rbindlist(PCA_data)
+head(PCA_df)
+save(PCA_data, file = '/Volumes/microsd/long_project/data/PCA_data.RData')
+save(PCA_df, file = '/Volumes/microsd/long_project/data/PCA_df.RData')
+load('/Volumes/microsd/long_project/data/PCA_df.RData')
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+cmeans<- colMeans(PCA_df)
+PCA_df_demeaned = t(t(PCA_df) -cmeans)
+decomp = svd(PCA_df)
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+head(PCA_cov)
+load('/Volumes/microsd/long_project/data/PCA_df.RData')
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+head(PCA_cov)
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+head(PCA_cov)
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+cmeans<- colMeans(PCA_df)
+decomp = svd(PCA_df)
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+head(PCA_cov)
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+head(PCA_cov)
+save(decomp, file = '/Volumes/microsd/long_project/data/decomp.RData')
+save(PCA_cov, file = '/Volumes/microsd/long_project/data/PCA_cov.RData')
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+library(lme4)
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+summary(test)
+cols = 1:6
+#done on local machine
+#load lesion frequency data for each subject
+load('/Volumes/microsd/long_project/data/lesion_incidence_times.RData')
+lesion_frequency = numeric()
+for(i in 1:length(lesion_incidence_times)){
+temp = lesion_incidence_times[[i]]
+temp_count = numeric()
+counter = 1
+for(j in 1:length(temp)){
+lesions = temp[[j]]
+if(length(lesions)>0){
+temp_count[counter] = length(lesions)-1
+counter = counter+1
+}
+}
+lesion_frequency[i] = sum(temp_count)
+}
+lesion_frequency = as.data.frame(lesion_frequency)
+total_lesions = sum(lesion_frequency)
+names(lesion_frequency) = c('Number of Lesions Per Subject')
+kable(lesion_frequency, caption = 'Frequency of lesion load by subject')
+library(knitr)
+kable(lesion_frequency, caption = 'Frequency of lesion load by subject')
+#Done locally
+#SVD decomposition to obtain biomaker
+load('/Volumes/microsd/long_project/data/PCA_df.RData')
+#Remove Unncessary Covariates and create covariates used in model
+PCA_cov = PCA_df[, c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType")]
+PCA_cov$Age = PCA_cov$Age/365-mean(PCA_cov$Age/365)
+PCA_cov$I_Age_40 = PCA_cov$Age*ifelse(PCA_cov$Age>4,1,0)
+#make treatment binary if untreated give 0 if treated give 1
+PCA_cov$Treatment = ifelse(PCA_cov$Treatment == 'untreated', 0, 1)
+#make on steroids binary if on steroids give 1 if not give 0
+PCA_cov$OnSteroids = ifelse(PCA_cov$OnSteroids == 'FALSE', 0, 1)
+#extract PCA df from interplated data and de-mean
+PCA_df = PCA_df[,28:dim(PCA_df)[2]]
+cmeans<- colMeans(PCA_df)
+PCA_df_demeaned = t(t(PCA_df) -cmeans)
+#decomposition
+#first column of us is biomarker
+#first column of v is plot in paper
+decomp = svd(PCA_df)
+#make covariate or model data
+#PCA_cov = cbind(PCA_cov, decomp$u[,1])
+PCA_cov = cbind(PCA_cov, (PCA_df_demeaned%*%decomp$v[,1]))
+colnames(PCA_cov) =  c("subject", "lesion", "time_inc", "distance", "Age", "Sex",
+"Treatment", "OnSteroids", "DiseaseSubType", "I_Age_40", "biomarker")
+save(decomp, file = '/Volumes/microsd/long_project/data/decomp.RData')
+save(PCA_cov, file = '/Volumes/microsd/long_project/data/PCA_cov.RData')
+#Need unique lesion ID
+count = 1
+load('/Volumes/microsd/long_project/data/PCA_cov.RData')
+lme_data = matrix(NA, nrow = 1, ncol = dim(PCA_cov)[2])
+lme_data = lme_data[-1,]
+for(i in 1:length(unique(PCA_cov$subject))){
+subject_i = subset(PCA_cov, PCA_cov$subject == i)
+for(j in unique(subject_i$time_inc)){
+all_lesions = subset(subject_i, subject_i$time_inc == j)
+for(k in unique(all_lesions$lesion)){
+lesion_k = subset(all_lesions, all_lesions$lesion == k)
+lesion_k$lesion = count
+count = count+1
+lme_data = rbind(lme_data, lesion_k)
+}
+}
+}
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+library(lme4)
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+test <- lmer(biomarker ~ factor(DiseaseSubType) + distance + Age + I_Age_40 + factor(OnSteroids) +
+factor(Sex) + factor(Treatment) + (1 | subject/lesion) , lme_data, REML = FALSE)
+summary(test)
+setwd("/Volumes/microsd/mimosa")
+library(roxygen2)
