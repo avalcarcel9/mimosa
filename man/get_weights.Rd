@@ -20,7 +20,11 @@ vector of weights
 Gets weights for IMCo model
 }
 \examples{
-\dontrun{
-
-}
+offsets = c(-1, 0, 1)
+offsets = expand.grid(offsets, offsets, offsets)
+sigma = 3
+voxelDims = c(0.25, 0.8, 3)
+wts = get_weights(offsets = offsets, voxelDims = voxelDims
+sigma = sigma)
+stopifnot(length(wts)==27)
 }
