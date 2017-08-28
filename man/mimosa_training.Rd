@@ -20,29 +20,40 @@ mimosa_training(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL,
 
 \item{PD}{vector of full path to PD if available. If not use NULL.}
 
-\item{tissue}{is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object}
+\item{tissue}{is a logical value that determines whether the brain mask is
+a full brain mask or tissue mask (excludes CSF), should be FALSE unless
+you provide the tissue mask as the brain_mask object}
 
-\item{gold_standard}{vector of full path to Gold standard segmentations. Typically manually segemented images.}
+\item{gold_standard}{vector of full path to Gold standard segmentations.
+Typically manually segemented images.}
 
 \item{normalize}{TRUE normalizes image inputs using z-score normalization}
 
-\item{slices}{vector of desired slices to train on, if NULL then train over the entire brain mask}
+\item{slices}{vector of desired slices to train on, if NULL then train
+over the entire brain mask}
 
-\item{orientation}{string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"}
+\item{orientation}{string value telling which orientation the training
+slices are specified in, can take the values of "axial", "sagittal",
+or "coronal"}
 
-\item{cores}{numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)}
+\item{cores}{numeric indicating the number of cores to be used
+(no more than 4 is useful for this software implementation)}
 
 \item{verbose}{logical indicating printing diagnostic output}
 
-\item{outdir}{vector of paths/IDs to be pasted to objects that will be saved. NULL if objects are not to be saved}
+\item{outdir}{vector of paths/IDs to be pasted to objects that will be
+saved. NULL if objects are not to be saved}
 
 \item{optimal_threshold}{NULL. To run algorithm provide vector of thresholds}
 }
 \value{
-GLM objects fit in the MIMoSA procedure and optimal threshold evaluated for full training set
+GLM objects fit in the MIMoSA procedure and optimal threshold
+evaluated for full training set
 }
 \description{
-This function trains the MIMoSA model from the data frames produced by mimosa_data on all subjects and determines optimal threshold based on training data
+This function trains the MIMoSA model from the data frames
+produced by mimosa_data on all subjects and determines optimal threshold
+based on training data
 }
 \examples{
 \dontrun{

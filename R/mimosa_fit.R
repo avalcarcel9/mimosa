@@ -4,7 +4,7 @@
 #' @param training_dataframe data.frame(s) produced by the mimosa_data function
 #' @param formula formula to be fit by glm model
 #' @export
-#' @importFrom stats glm
+#' @importFrom stats glm binomial
 #' @return Returns a glm object containing the trained MIMoSA coefficients.
 #' @examples \dontrun{
 #'
@@ -13,7 +13,7 @@
 mimosa_fit <- function(training_dataframe, formula) {
 
   mimosa_model = glm(formula = formula, data = training_dataframe,
-                      family = binomial(link = logit))
+                      family = binomial(link = "logit"))
   mimosa_model$y = c()
   mimosa_model$model = c()
   mimosa_model$residuals = c()
