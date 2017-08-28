@@ -6,8 +6,7 @@ mimosa is an R package based on the paper: MIMoSA: A Method for Inter-Modal Segm
 
 You can install mimosa from github with:
 
-
-``` r
+```r
 # install.packages("devtools")
 devtools::install_github("avalcarcel9/mimosa")
 ```
@@ -15,6 +14,8 @@ devtools::install_github("avalcarcel9/mimosa")
 [![Travis-CI Build Status](https://travis-ci.org/avalcarcel9/mimosa.svg?branch=master)](https://travis-ci.org/avalcarcel9/mimosa)
 
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/avalcarcel9/mimosa?branch=master&svg=true)](https://ci.appveyor.com/project/avalcarcel9/mimosa)
+
+[![Coverage Status](https://img.shields.io/coveralls/muschellij2/mimosa.svg)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
 
 ## Example
 
