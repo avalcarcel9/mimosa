@@ -12,6 +12,8 @@ os:
   - linux
   - osx
 
+r_binary_packages: 
+  - data.table
 r_check_args: --as-cran
 # r_check_args: "--as-cran --install-args=--build"
 
