@@ -1,26 +1,38 @@
 #' @title Train MIMoSA model on full training set
 #'
-#' @description This function trains the MIMoSA model from the data frames produced by mimosa_data on all subjects and determines optimal threshold based on training data
+#' @description This function trains the MIMoSA model from the data frames
+#' produced by mimosa_data on all subjects and determines optimal threshold
+#' based on training data
 #' @param brain_mask vector of full path to brain mask
 #' @param FLAIR vector of full path to FLAIR
 #' @param T1 vector of full path to T1
 #' @param T2 vector of full path to T2 if available. If not use NULL.
 #' @param PD vector of full path to PD if available. If not use NULL.
-#' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
-#' @param gold_standard vector of full path to Gold standard segmentations. Typically manually segemented images.
+#' @param tissue is a logical value that determines whether the brain mask is
+#' a full brain mask or tissue mask (excludes CSF), should be FALSE unless
+#' you provide the tissue mask as the brain_mask object
+#' @param gold_standard vector of full path to Gold standard segmentations.
+#' Typically manually segemented images.
 #' @param normalize TRUE normalizes image inputs using z-score normalization
-#' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
-#' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
-#' @param cores numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
+#' @param slices vector of desired slices to train on, if NULL then train
+#' over the entire brain mask
+#' @param orientation string value telling which orientation the training
+#' slices are specified in, can take the values of "axial", "sagittal",
+#' or "coronal"
+#' @param cores numeric indicating the number of cores to be used
+#' (no more than 4 is useful for this software implementation)
 #' @param verbose logical indicating printing diagnostic output
-#' @param outdir vector of paths/IDs to be pasted to objects that will be saved. NULL if objects are not to be saved
+#' @param outdir vector of paths/IDs to be pasted to objects that will be
+#' saved. NULL if objects are not to be saved
 #' @param optimal_threshold NULL. To run algorithm provide vector of thresholds
 #' @export
 #' @importFrom neurobase writenii readnii niftiarr
 #' @importFrom data.table rbindlist
 #' @importFrom stats predict
 #' @importFrom fslr fslsmooth
-#' @return GLM objects fit in the MIMoSA procedure and optimal threshold evaluated for full training set
+#' @importFrom utils write.csv
+#' @return GLM objects fit in the MIMoSA procedure and optimal threshold
+#' evaluated for full training set
 #' @examples \dontrun{
 #'
 #'}

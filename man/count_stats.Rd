@@ -24,8 +24,3 @@ List of objects
 \description{
 This function calculates true positive rate, false positive rate, false negative rate, false positive count, and sensitivity
 }
-\examples{
-\dontrun{
-
-}
-}

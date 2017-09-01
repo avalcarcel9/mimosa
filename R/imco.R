@@ -12,12 +12,12 @@
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
 #' @export
-#' @import ANTsR 
-#' @importFrom extrantsr check_ants 
+#' @importFrom ANTsRCore antsGetSpacing getNeighborhoodInMask
+#' @importFrom extrantsr check_ants
 #' @importFrom stats qnorm
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
 #' @examples \dontrun{
-#' 
+#'
 #'}
 imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhoodSize=3, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
     if(!(type=="pca" | type=="regression")){
@@ -54,8 +54,8 @@ imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhood
     # Assign anything outside brain mask to NA
     fileList = lapply(fileList, function(x){newx = x; newx[bMask==0] = NA; return(newx)})
     ######################################
-    # FWHM => sigma 
-    # Note: We specify FWHM in terms of number of 
+    # FWHM => sigma
+    # Note: We specify FWHM in terms of number of
     #       voxels along the axis of smallest size (mm).
     #       Thus, the neighborhood is specified in terms
     #       of a univariate Gaussian but the weights are
@@ -67,7 +67,7 @@ imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhood
         stop('neighborhoodSize must be odd integer')
     }
     width = neighborhoodSize*minDim
-    # Need sigma for specifying Guassian kernel 
+    # Need sigma for specifying Guassian kernel
     sigma = width/(2*sqrt(2*log(2)))
     # We will choose a radius based on quantile (mm) of univariate normal
     lower = qnorm(.005, sd=sigma)
