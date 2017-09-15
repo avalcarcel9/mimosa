@@ -11,7 +11,6 @@ Imports: ANTsRCore (>= 0.4.0), rlist (>= 0.4.5), extrantsr (>= 1.2.0),
     fslr (>= 2.12.0), neurobase (>= 1.13.2), parallel (>= 2.14.0), 
     oasis (>= 2.1), utils (>= 3.2.5), data.table (>= 1.10.4), stats
 License: GPL-2
-LazyData: TRUE
 RoxygenNote: 6.0.1.9000
 Remotes: muschellij2/extrantsr, stnava/ANTsRCore, muschellij2/neurobase
 Packaged: 2017-08-24 17:32:43 UTC; alval
