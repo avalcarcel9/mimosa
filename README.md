@@ -25,7 +25,7 @@ devtools::install_github('avalcarcel9/mimosa')
 
 ## Vignette
 
-For a full implementation of the methods please see our vignette in the Vignettes folder [here](https://github.com/avalcarcel9/mimosa/tree/master/vignettes).
+For a full implementation of the methods please see our [vignette](https://github.com/avalcarcel9/mimosa/tree/master/vignettes).
 
 
 
