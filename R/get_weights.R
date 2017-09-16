@@ -4,6 +4,7 @@
 #' @param offsets matrix of offsets from center voxel that define neighborhood
 #' @param voxelDims voxel dimensions in mm
 #' @param sigma standard deviation of Gaussian kernel
+#' @export
 #' @return vector of weights
 #' @examples
 #' offsets = c(-1, 0, 1)
