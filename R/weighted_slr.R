@@ -6,7 +6,6 @@
 #' @param wts vector of kernel weights
 #' @param mInds indices for which to compute IMCo
 #' @param refImg reference image for header info
-#' @export
 #' @return L list including intercept and slope from both weighted SLRs
 #' @examples \dontrun{
 #'

@@ -11,7 +11,6 @@
 #' @param verbose TRUE for updates on computation, else FALSE
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
-#' @export
 #' @importFrom ANTsRCore antsGetSpacing getNeighborhoodInMask
 #' @importFrom extrantsr check_ants
 #' @importFrom stats qnorm
