@@ -60,7 +60,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
 
     #names/formula/mimosa_data for items in subject_files and formula to train based on T2/PD missingness
     if(is.null(T2)==TRUE & is.null(PD)==FALSE){
-      #T2 miss PD yes
+      # Images include T1, FLAIR, PD
       formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + PD_10 * PD + PD_20 * PD + T1_10 * T1 + T1_20 * T1 +
         FLAIRonT1_intercepts + FLAIRonPD_intercepts + T1onPD_intercepts +
         T1onFLAIR_intercepts + PDonFLAIR_intercepts + PDonT1_intercepts +
@@ -75,7 +75,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
                                  orientation = orientation, cores = cores, verbose = verbose)
     }
     if(is.null(T2)==FALSE & is.null(PD)==TRUE){
-      #T2 yes PD miss
+      # Images include T1, FLAIR, T2
       formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + T2_10 * T2 + T2_20 * T2 + T1_10 * T1 + T1_20 * T1 +
         FLAIRonT1_intercepts + FLAIRonT2_intercepts + T1onT2_intercepts +
         T1onFLAIR_intercepts + T2onFLAIR_intercepts + T2onT1_intercepts +
@@ -90,7 +90,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
                                  orientation = orientation, cores = cores, verbose = verbose)
     }
     if(is.null(T2)==TRUE & is.null(PD)==TRUE){
-      #T2 and PD missing
+      # Images include T1 and FLAIR
       formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + T1_10 * T1 + T1_20 * T1 +
         FLAIRonT1_intercepts + T1onFLAIR_intercepts +
         FLAIRonT1_slopes + T1onFLAIR_slopes
@@ -103,7 +103,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
                                  orientation = orientation, cores = cores, verbose = verbose)
     }
     if(is.null(T2)==FALSE & is.null(PD)==FALSE){
-      #no images missing
+      # Images include T1, FLAIR, T2, PD
       formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + PD_10 * PD + PD_20 * PD + T2_10 * T2 + T2_20 * T2 + T1_10 * T1 + T1_20 * T1 +
         FLAIRonT1_intercepts + FLAIRonT2_intercepts + FLAIRonPD_intercepts +
         T1onT2_intercepts + T1onPD_intercepts + T2onPD_intercepts +
@@ -122,7 +122,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
                                  orientation = orientation, cores = cores, verbose = verbose)
     }
 
-    #save data we need for later in lists
+    # Save candidate mask and mimosa_dataframe since we need it later in lists
     top_voxel_list[[i]] = train_data_i$top_voxels
     train_data_all_list[[i]] = train_data_i$mimosa_dataframe
     gs_DSC_list[[i]] = sum(imgs_list$gold_standard)
@@ -137,47 +137,47 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
         message(paste0('# Saving Subject Information for', outdir[i]))
       }
 
-      #write training dataframe for subject i
-      ###Put outdir first so that we have the path as specified and ID
+      # Write training dataframe for subject i
+      ### Put outdir first so that we have the path as specified and ID
 
-      #return the train dataframe
+      # Return the train dataframe
       write.csv(train_data_i$mimosa_dataframe, file = paste0(outdir[i], '_mimosa_dataframe.csv'))
-      #write top voxels for subject i
+      # Write top voxels for subject i
       writenii(train_data_i$top_voxels, filename = paste0(outdir[i], '_top_voxels'))
-      #return the smoothed at 10 images
+      # Return the smoothed at 10 images
       for(j in 1:length(train_data_i$smoothed$smooth_10)){
         writenii(train_data_i$smoothed$smooth_10[[j]], filename = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_10)[j], '_smoothed'))
       }
-      #return the smoothed at 20 images
+      # Return the smoothed at 20 images
       for(j in 1:length(train_data_i$smoothed$smooth_20)){
         writenii(train_data_i$smoothed$smooth_20[[j]], filename = paste0(outdir[i], '_', names(train_data_i$smoothed$smooth_20)[j], '_smoothed'))
       }
-      #return the coupling intercept images
+      # Return the coupling intercept images
       for(j in 1:length(train_data_i$coupling_intercepts)){
         writenii(train_data_i$coupling_intercepts[[j]], filename = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_intercepts)[j]))
       }
-      #return the slope images
+      # Return the slope images
       for(j in 1:length(train_data_i$coupling_slopes)){
         writenii(train_data_i$coupling_slopes[[j]], filename = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
       }
-      ##Return normalized and/or tissue depending on inputs
+      ## Return normalized and/or tissue depending on inputs
       if(normalize == TRUE & tissue == TRUE){
-        #if normalize is true then we normalize the images provided, if tissue is true we treat the brain mask as
+        # If normalize is true then we normalize the images provided, if tissue is true we treat the brain mask as
         ##the tissue mask in this case return the normalized images but they have the tissue mask so do not return
-        #normalized images
+        # Normalized images
         for(j in 1:length(train_data_i$normalized)){
           writenii(train_data_i$normalized[[j]], filename = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
       }
       if(normalize == FALSE & tissue == FALSE){
-        #if normalize is FALSE then we normalize images if tissue is false we find the tissue mask
-        ##return tissue
+        # If normalize is FALSE then we normalize images if tissue is false we find the tissue mask
+        ## Return tissue
         writenii(train_data_i$tissue_mask, filename = paste0(outdir[i], '_tissue_mask'))
       }
       if(normalize == TRUE & tissue == FALSE){
-        #if normalize is true then images are normalized, if tissue is false then we find the tissue mask
-        ##return both
-        #normalized images
+        # If normalize is true then images are normalized, if tissue is false then we find the tissue mask
+        ## return both
+        # Normalized images
         for(j in 1:length(train_data_i$normalized)){
           writenii(train_data_i$normalized[[j]], filename = paste0(outdir[i], '_', names(train_data_i$normalized)[j], '_norm'))
         }
@@ -188,46 +188,43 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
     }
   }
 
-  #transform list to dataframe so that we can fit MIMoSA
+  # Transform list to dataframe so that we can fit the MIMoSA model
   train_dataframe_all = rbindlist(train_data_all_list)
 
   if (verbose) {
     message(paste0('# Fitting MIMoSA Model'))
   }
 
-  #Fit Full MIMoSA Model
+  # Fit Full MIMoSA Model
   mimosa_fit_model = mimosa_fit(training_dataframe=train_dataframe_all, formula=formula)
   rm(train_dataframe_all)
 
-  #If user does not want to calculate optimal threshold (optimal_threshold == FALSE) then return the model
+  # If user does not want to calculate optimal threshold (optimal_threshold == FALSE) then return the model
   if(is.null(optimal_threshold)){
     return(mimosa_fit_model)
   }
   if (!is.null(optimal_threshold)){
-    #########
-    # I think we can lapply or mclapply to make this faster and take less memory?
-    ##########
-
-    #initialize a storage matrix for DSC values
+    
+    # Initialize a storage matrix for DSC values
     dsc_mat = matrix(NA, nrow = length(train_data_all_list), ncol = length(optimal_threshold))
 
     for(i in 1:length(train_data_all_list)){
 
-      #first generate probability maps for each subject
+      # First generate probability maps for each subject
       predictions = predict(mimosa_fit_model, train_data_all_list[[i]], type = "response")
       predictions_nifti = niftiarr(top_voxel_list[[i]], 0)
       predictions_nifti[top_voxel_list[[i]] == 1] = predictions
       prob_map = fslsmooth(predictions_nifti, sigma = 1.25, mask = top_voxel_list[[i]],
                            retimg = TRUE, smooth_mask = TRUE)
 
-      #Loop Through Thresholds to determine threshold
+      # Loop Through Thresholds to determine threshold
       DSC_scores = numeric()
       for (j in 1:length(optimal_threshold)) {
-        #Threshold To Create Segmented Maps For Train Subjects
+        # Threshold To Create Segmented Maps For Train Subjects
         lesion_mask = (prob_map >= optimal_threshold[j])
         lesion_df=c(lesion_mask[top_voxel_list[[i]] == 1])
 
-        #new threshold1#
+        # New threshold1#
         DSC_scores[j] = (2*sum(lesion_df*train_data_all_list[[i]]$gold_standard))/(sum(lesion_df)+gs_DSC_list[[i]])
       }
       dsc_mat[i,] = DSC_scores

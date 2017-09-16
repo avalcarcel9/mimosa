@@ -9,10 +9,7 @@
 #' @export
 #' @importFrom extrantsr label_mask
 #' @importFrom neurobase niftiarr
-#' @return List of objects
-
-
-###BE SURE TO DETAIL CALCULATION OF SUMMARY MEASURE IN VIGNETTE OR WHEN PUBLISHED!!!!
+#' @return Matrix of results
 
 count_stats <- function(gold_standard, predicted_segmentation, k, percent_overlap = NULL, verbose = TRUE){
 
