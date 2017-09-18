@@ -73,7 +73,7 @@ mimosa_data(brain_mask,
             verbose = TRUE)
 ```
 
-### Arguments
+_Arguments_
 
 - `brain_mask` brain or tissue mask of class `nifti`
 - `FLAIR` volume of class `nifti`
