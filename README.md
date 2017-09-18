@@ -137,9 +137,7 @@ The method performs best when trained on data. Since gold standard manual segmen
 
 Users should use the model which matches their imaging sequence. For example, if you only have data collected for FLAIR and T1 modalities then you should use the `mimosa_model_No_PD_No_T2`.
 
-```{r, eval = FALSE}
-# change eval to TRUE on cluster
-
+```{r}
 mimosa_model
 mimosa_model_No_PD
 mimosa_model_No_T2
