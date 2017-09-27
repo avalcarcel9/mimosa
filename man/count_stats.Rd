@@ -19,7 +19,7 @@ count_stats(gold_standard, predicted_segmentation, k, percent_overlap = NULL,
 \item{verbose}{Logical indicating printing diagnostic output}
 }
 \value{
-List of objects
+Matrix of results
 }
 \description{
 This function calculates true positive rate, false positive rate, false negative rate, false positive count, and sensitivity

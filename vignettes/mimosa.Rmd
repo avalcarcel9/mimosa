@@ -1,10 +1,10 @@
 ---
-title: 'MIMoSA: A Method for Inter-Modal Segmentation Analysis'
+title: "MIMoSA: A Method for Inter-Modal Segmentation Analysis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{mimosa}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  
 ---
 
 ```{r setup, include=FALSE}

@@ -4,12 +4,18 @@ mimosa is an R package based on the paper: MIMoSA: A Method for Inter-Modal Segm
 
 ## Installation
 
-You can install mimosa from github with:
-
-```r
-# install.packages("devtools")
-devtools::install_github("avalcarcel9/mimosa")
+To install the package from neuroconductor, type:
+```{r, eval = FALSE}
+source("https://neuroconductor.org/neurocLite.R")
+neuro_install("mimosa")
 ```
+
+To get the latest development version from GitHub:
+
+```{r, eval = FALSE}
+devtools::install_github('avalcarcel9/mimosa')
+```
+
 
 [![Travis-CI Build Status](https://travis-ci.org/avalcarcel9/mimosa.svg?branch=master)](https://travis-ci.org/avalcarcel9/mimosa)
 
@@ -17,10 +23,125 @@ devtools::install_github("avalcarcel9/mimosa")
 
 [![Coverage Status](https://img.shields.io/coveralls/muschellij2/mimosa.svg)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
 
-## Example
+## Vignette
 
-We are currently working on an example. 
+For a full implementation of the methods please see our [vignette](https://github.com/avalcarcel9/mimosa/tree/master/vignettes).
 
-``` r
-## basic example code
+## Functions
+
+Below is a list of the functions and a description of options available to utilize through the `mimosa` package.
+
+### count_stats
+
+This function calculates true positive rate, false positive rate, false negative rate, false positive count, and sensitivity.
+
+Formulas for how these are calculated are provided in the 'Evaluate Performance' section.
+
+```{r, eval = FALSE}
+count_stats(gold_standard, 
+            predicted_segmentation, 
+            k, 
+            percent_overlap = NULL, 
+            verbose = TRUE)
 ```
+
+_Arguments_
+
+- `gold_standard` Gold standard segmentation mask of class `nifti`
+- `predicted_segmentation` Predicted segmentation mask volume of class `nifti`
+- `k` Minimum number of voxels for a segmentation cluster/component
+- `percent_overlap` Proportion of gold standard segmentation to be overlapped by predicted
+- `verbose` Logical indicating printing diagnostic output
+
+### mimosa_data
+
+This function creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes. When utilizing the function for training you will also need gold standard binary segmentation mask. The function can create a tissue mask (or the user can supply a brain mask), a binary mask of candidate voxels for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method.
+
+```{r, eval = FALSE}
+mimosa_data(brain_mask, 
+            FLAIR, 
+            T1, 
+            T2 = NULL, 
+            PD = NULL, 
+            tissue = FALSE, 
+            gold_standard = NULL, 
+            normalize = TRUE, 
+            cand_mask = NULL, 
+            slices = NULL, 
+            orientation = c("axial", "coronal", "sagittal"), 
+            cores = 1, 
+            verbose = TRUE)
+```
+
+_Arguments_
+
+- `brain_mask` brain or tissue mask of class `nifti`
+- `FLAIR` volume of class `nifti`
+- `T1` volume of class `nifti`
+- `T2` volume of class `nifti`. If not available use `NULL`.
+- `PD` volume of class `nifti`. If not available use `NULL`.
+- `tissue` is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be `FALSE` unless you provide the tissue mask as the brain_mask object
+- `gold_standard` gold standard lesion segmentation mask of class `nifti`
+- `normalize` is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be `TRUE` unless you train model using an alternative normalization or provide normalized images
+- `cand_mask` is `NULL` to use candidate mask procedure proposed with method or a `nifti` object to be used as the candidate mask
+- `slices` vector of desired slices to train on, if `NULL` then train over the entire brain mask
+- `orientation` string value telling which orientation the training slices are specified in, can take the values of "axial","coronal", and "sagittal", 
+- `cores` 1 numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
+- `verbose` logical indicating printing diagnostic output
+
+### mimosa_training 
+
+This function trains the MIMoSA model from the data frames produced by `mimosa_data` on all subjects and determines an optimal threshold based on training data.
+
+
+```{r, eval = FALSE}
+mimosa_training(brain_mask, 
+                FLAIR, 
+                T1, 
+                T2 = NULL, 
+                PD = NULL, 
+                tissue = FALSE, 
+                gold_standard, 
+                normalize = TRUE, 
+                slices = NULL, 
+                orientation = c("axial", "coronal", "sagittal"), 
+                cores = 1, 
+                verbose = TRUE, 
+                outdir = NULL, 
+                optimal_threshold = NULL)
+```
+
+_Arguments_
+
+- `brain_mask` vector of full path to brain mask
+- `FLAIR` `vector` of full path to FLAIR
+- `T1` `vector` of full path to T1
+- `T2` `vector` of full path to T2 if available. If not use `NULL`.
+- `PD` `vector` of full path to PD if available. If not use `NULL`.
+- `tissue` is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be `FALSE` unless you provide the tissue mask as the `brain_mask` object
+- `gold_standard` vector of full path to gold standard segmentations. Typically manually segmented images.
+- `normalize` `TRUE` normalizes image inputs using z-score normalization slices vector of desired slices to train on, if `NULL` then train over the entire brain mask orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
+- `cores` numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
+- `verbose` logical indicating printing diagnostic output
+- `outdir` vector of paths/IDs to be pasted to objects that will be saved. `NULL` if objects are not to be saved
+- `optimal_threshold = NULL`. To run algorithm provide vector of thresholds
+
+## Pre-Trained Models
+
+The method performs best when trained on data. Since gold standard manual segmentations are not always delineated though through the `mimosa` package we have trained four (4) distinct models for use. These models can be called and are stored under the following names:
+
+- `mimosa_model` trained using FLAIR, T1, T2, and PD imaging modalities
+- `mimosa_model_No_PD` trained using FLAIR, T1, and T2 imaging modalities
+- `mimosa_model_No_T2` trained using FLAIR, T1, and PD imaging modalities
+- `mimosa_model_No_PD_T2` trained using FLAIR and T1 imaging modalities
+
+Users should use the model which matches their imaging sequence. For example, if you only have data collected for FLAIR and T1 modalities then you should use the `mimosa_model_No_PD_No_T2`.
+
+```{r}
+mimosa_model
+mimosa_model_No_PD
+mimosa_model_No_T2
+mimosa_model_No_PD_No_T2
+```
+
+

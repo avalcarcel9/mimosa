@@ -10,7 +10,6 @@
 #' @param verbose TRUE for updates on computation, else FALSE
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
-#' @export
 #' @importFrom extrantsr ants2oro
 #' @importFrom rlist list.rbind
 #' @importFrom stats coef cov.wt lm.wfit
