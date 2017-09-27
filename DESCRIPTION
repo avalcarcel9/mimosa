@@ -1,7 +1,7 @@
 Package: mimosa
 Type: Package
 Title: 'MIMoSA': A Method for Inter-Modal Segmentation Analysis
-Version: 0.2
+Version: 0.3
 Authors@R: c(person("Alessandra", "Valcarcel", role = c("aut", "cre"), email =
     "alval@mail.med.upenn.edu"))
 Author: Alessandra Valcarcel
@@ -13,7 +13,9 @@ Imports: ANTsRCore (>= 0.4.0), rlist (>= 0.4.5), extrantsr (>= 1.2.0),
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1.9000
-Remotes: muschellij2/extrantsr, stnava/ANTsRCore, muschellij2/neurobase, jonclayden/mmand
+Encoding: UTF-8
+Remotes: muschellij2/extrantsr, stnava/ANTsRCore, 
+    muschellij2/neurobase, jonclayden/mmand
 Packaged: 2017-08-24 17:32:43 UTC; alval
 URL: https://github.com/avalcarcel9/mimosa
 BugReports: https://github.com/avalcarcel9/mimosa/issues
