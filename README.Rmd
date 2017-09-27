@@ -1,3 +1,8 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 # mimosa
 
 `mimosa` is an R package based on the paper: [MIMoSA: A Method for Inter-Modal Segmentation Analysis by Valcarcel et al](https://www.biorxiv.org/content/biorxiv/early/2017/06/15/150284.full.pdf). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
@@ -32,7 +37,7 @@ muschellij2 badges:
 
 <!-- [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/muschellij2/mimosa?branch=master&svg=true)](https://ci.appveyor.com/project/muschellij2/mimosa) -->
 
-[![Coverage status](https://coveralls.io/repos/github/muschellij2/mimosa/badge.svg?branch=master)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
+[![Coverage status](https://coveralls.io/repos/github/muschellij2/mimosa/badge.svg)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
 
 ## Vignette
 
