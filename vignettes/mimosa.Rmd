@@ -1,32 +1,639 @@
 ---
 title: "MIMoSA: A Method for Inter-Modal Segmentation Analysis"
+author: "Alessandra Valcarcel"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{mimosa}
   %\VignetteEngine{knitr::rmarkdown}
-  
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Overview
+
+The mimosa package trains and makes predictions from the MIMoSA method. Access to the full paper can be found [here](http://www.biorxiv.org/content/early/2017/06/15/150284). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
+
+## Installation
+
+To install the package from neuroconductor, type:
+```{r, eval = FALSE}
+source("https://neuroconductor.org/neurocLite.R")
+neuro_install("mimosa")
 ```
 
-## R Markdown
+To get the latest development version from GitHub:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r, eval = FALSE}
+devtools::install_github('avalcarcel9/mimosa')
 ```
 
-## Including Plots
+When going through this tutorial be sure your package is up to date. You will also need to install and load the following packages:
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, warning = FALSE, message = FALSE}
+library(neurobase)
+library(mimosa)
+library(data.table)
+library(oasis)
+library(fslr)
+library(scales)
+library(tidyverse)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Tutorial Data
+
+We will be using data from the [2015 Longitudinal Multiple Sclerosis Lesion Segmentation Challenge](https://smart-stats-tools.org/node/26).
+
+The MIMoSA algorithm is most powerful when FLAIR, T1, T2, and PD imaging modalities are provided but the algorithm only needs FLAIR and T1 in order to run. While there is no statistically significant loss is power when reducing the types of imaging modalities there may be changes in qualitative results.
+
+### Getting and organizing the data for use
+
+After going to [2015 Longitudinal Multiple Sclerosis Lesion Segmentation Challenge](https://smart-stats-tools.org/node/26) you will need to create an account in order to download the data. After creating an account, you will receive an email (mine took a little over a day to get) with your login allowing you to set up a password. At this point you can go [here](https://smart-stats-tools.org/lesion-challenge-2015) to download the data.
+
+The data consists of a set of training subjects in the training folder for which we have 2 sets of gold standard manual segmentations and 14 test subjects for which there are no gold standard manual segmentations provided. Each subject may have data for multiple time points. After downloading these data, I put the training and testdata_website data into a folder ISBI_Challenge_2015.
+
+For these analysis, we will use the ISBI_Challenge_2015/training/training01/preprocessed data to train the model using the gold standard manually segmented images in  ISBI_Challenge_2015/training/masks/training01_0#_mask2.nii. We will then apply the trained model on ISBI_Challenge_2015/testdata_website/test01/preprocessed/ images to generate probability maps and MIMoSA predicted lesion masks. We will also use ISBI_Challenge_2015/training/training02/preprocessed/ data from the first time point to evaluate performance.
+
+If you have your own data you can adapt code provided here and apply the methods to your own data. For this reason, all code provided is intended to provide a direct application of methods therefore speed and efficiency were sacrificed in the examples provided.
+
+### Creating a filename `matrix`
+
+Before loading the data into R let's first organize the image file paths into a `matrix`.
+
+
+```{r, setup, echo = FALSE}
+knitr::opts_knit$set(root.dir = '/Users/alval/Documents')
+```
+
+
+
+```{r}
+# Note these paths will be to where you have stored the data or to your own data
+T1_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
+                      pattern = "mprage_pp[.]nii$", 
+                      full.names = TRUE)
+T2_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
+                      pattern = "t2_pp[.]nii$", 
+                      full.names = TRUE)
+FLAIR_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
+                         pattern = "flair_pp[.]nii$", 
+                         full.names = TRUE)
+PD_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
+                      pattern = "pd_pp[.]nii$", 
+                      full.names = TRUE)
+GS_files = list.files(path = 'ISBI_Challenge_2015/training/training01/masks', 
+                      pattern = "mask2[.]nii$", 
+                      full.names = TRUE)
+filepaths = cbind(T1_files, T2_files, FLAIR_files, PD_files, GS_files)
+filepaths
+```
+
+### Preprocessing
+
+The `mimosa` package does not provide a preprocessing pipeline function. For the preprocessing pipeline used in the original methods please see our [paper](http://www.biorxiv.org/content/early/2017/06/15/150284). Before implementing the method, data should be inhomogeneity corrected, registered, skull stripped, and normalized to obtain accurate predicted lesion segmentations. The training functions in this package do allow for z-score normalization of the method. 
+
+Some preprocessing tips:
+
+In the implementation of this method, we notice that the specific preprocessing pipeline does not seem to make a difference so long as each preprocessing step does not fail. In cases with large lesion load, z-score normalization often fails and we suggest using `WhiteStripe`. In future versions of this package we plan to allow for `WhiteStripe` normalization.
+
+For this example, data are preprocessed for us. That is, they have been inhomogeneity corrected, registered, and skull stripped. They have not been normalized yet so we will apply z-score normalization through the `mimosa` package function arguments.
+
+## Creating Predictors
+
+Once data are preprocessed we can create a `data.frame` of predictors using the `mimosa_data` function which creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes. The user only needs FLAIR and T1 sequences but performance may suffer qualitatively. When training the model binary lesion masks are also required. The function returns a tissue mask, the candidate voxels mask for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method. 
+
+```{r, warning = FALSE}
+# The R package neurobase is needed for the readnii function
+T1_training01_01 = readnii(filepaths[1,1], 
+                           reorient = FALSE)
+T2_training01_01 = readnii(filepaths[1,2], 
+                           reorient = FALSE)
+FLAIR_training01_01 = readnii(filepaths[1,3], 
+                              reorient = FALSE)
+PD_training01_01 = readnii(filepaths[1,4], 
+                           reorient = FALSE)
+gold_standard = readnii(filepaths[1,5], 
+                        reorient = FALSE)
+```
+
+Before making the predictor data let's just visualize the loaded data.
+
+```{r}
+sequence = list(FLAIR = FLAIR_training01_01,
+                T1 = T1_training01_01,
+                T2 = T2_training01_01,
+                PD = PD_training01_01)
+multi_overlay(sequence,
+              z = floor(nsli(sequence[[1]])/2),
+              text = names(sequence),
+              text.y = rep(1.4, length(sequence)),
+              text.cex = rep(2.5, length(sequence))
+)
+rm(sequence)
+```
+
+Let's first create a brain mask by taking the union of positive voxels in the T1, T2, PD, and FLAIR. We use the union in order to include all voxels across all images with brain matter. The difference in these is typically only near the skull and will not be important after the selection of candidate voxels. We can then create the training `data.frame` for the sequence loaded in memory. The preprocessing carried out previously did not normalize the data therefore we will set `normalize = TRUE`. We are supplying the brain mask rather than a tissue mask so we set `tissue = FALSE`. If you supply the tissue mask as the `brain_mask` you can set `tissue = TRUE`.
+
+```{r}
+# Create a brain mask
+brain_mask1 = T1_training01_01 != 0
+brain_mask2 = T2_training01_01 != 0
+brain_mask3 = FLAIR_training01_01 != 0
+brain_mask4 = PD_training01_01 != 0
+brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
+brain_mask = brain_mask != 0
+
+# The mimosa R package is needed to run mimosa_data
+
+mimosa_data = mimosa_data(brain_mask = brain_mask, 
+                          FLAIR = FLAIR_training01_01, 
+                          T1 = T1_training01_01, 
+                          T2 = T2_training01_01, 
+                          PD = PD_training01_01, 
+                          tissue = FALSE, 
+                          gold_standard = gold_standard, 
+                          normalize = TRUE, 
+                          cand_mask = NULL, 
+                          slices = NULL, 
+                          orientation = c("axial", "coronal", "sagittal"), 
+                          cores = 1, 
+                          verbose = TRUE)
+```
+
+A note on the returned objects:
+
+```{r}
+is.list(mimosa_data)
+names(mimosa_data)
+names(mimosa_data$smoothed)
+names(mimosa_data$smoothed$smooth_10)
+names(mimosa_data$smoothed$smooth_20)
+names(mimosa_data$coupling_intercepts)
+names(mimosa_data$coupling_slopes)
+names(mimosa_data$normalized)
+```
+
+The following items are always returned from the `mimosa_data` function: 
+
+- `mimosa_dataframe` is the predictor dataframe
+- `top_voxels` is a mask for candidate lesion voxels. This is a binary mask of class `nifti`.
+- `smoothed` is an embedded list of smoothed volumes. Here there is another set of lists `smooth_10` and `smooth_20`. Each object in these lists is a `nifti`.
+- `coupling_intercepts` is an embedded list of the coupling intercept values inside of the candidate mask. Each object in this list is a `nifti`.
+- `coupling_slopes` is an embedded list of the coupling slopes inside of the candidate_mask. Each object in this list is a `nifti`.
+
+The following may be returned depending on input arguments:
+
+- `normalized` is an embedded list of normalized volumes. Returned when `normalize = TRUE`. Each object in this list is a `nifti`.
+- `tissue_mask` is a brain mask that excludes CSF. Returned when `tissue = FALSE`. Each object in this list is a `nifti`.
+
+Next, I show the first 5 rows of the `$mimosa_dataframe` and a few of the nifti objects displayed using `ortho2`. You can always save these objects using `writenii` and use a viewer of your choosing. 
+
+```{r}
+head(mimosa_data$mimosa_dataframe)
+
+ortho2(mimosa_data$top_voxels)
+ortho2(mimosa_data$smoothed$smooth_10$FLAIR_10)
+ortho2(mimosa_data$coupling_slopes$FLAIRonT1_slopes)
+
+# Remove mimosa_data from memory
+rm(mimosa_data)
+```
+
+The `mimosa_data$mimosa_dataframe` in conjunction with the candidate voxel mask or `mimosa_data$top_voxels` can be used to generate probability maps which can in turn be thresholded to generate predicted lesion masks.
+
+The `mimosa_data$mimosa_dataframe` is also used to train the model which we will cover in detail in the next section.
+
+## Train the MIMoSA Model
+
+There are two (2) approaches to training the mimosa model. In the first approach we will use the built in `mimosa_training` function which will create a large predictor matrix for all subjects supplied, train the model, and calculate the optimal threshold. In the second, you can utilize the `mimosa_data` and `mimosa_fit` functions to break up this process and train the model yourself. Both approaches yield the same results and therefore choice of approaches comes down to user preference and need. We will first show the approach using `mimosa_training` and then show an example broken down using the `mimosa_data` and `mimosa_fit` approach.
+
+1. `mimosa_training`
+
+Unlike `mimosa_data` here `brain_mask`, `FLAIR`, `T1`, `T2`, `PD`, and `gold_standard` are vectors of file paths to their respective object. We will use a simple for loop to generate and save the brain masks. You may need to change the `substr(filepaths, 74, 78)` if your file path is different. Again, we note that this is not the most efficient computational approach.
+
+Since we need to supply vectors of file paths and not local objects when applying this function. We will need to create brain masks for each subject and add them to the `matrix` `filepaths`. After that, we will use the same arguments as in the `mimosa_data` example.
+
+```{r}
+# The neurobase R package is required to read and write images
+for(i in 1:dim(filepaths)[1]){
+  # Load files
+  T1_training = readnii(filepaths[i,1], 
+                        reorient = FALSE)
+  T2_training = readnii(filepaths[i,2], 
+                        reorient = FALSE)
+  FLAIR_training = readnii(filepaths[i,3], 
+                           reorient = FALSE)
+  PD_training = readnii(filepaths[i,4], 
+                        reorient = FALSE)
+  # Calculate brain mask
+  brain_mask1 = T1_training01_01 != 0
+  brain_mask2 = T2_training01_01 != 0
+  brain_mask3 = FLAIR_training01_01 != 0
+  brain_mask4 = PD_training01_01 != 0
+  brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
+  brain_mask = brain_mask != 0
+  # Save brain mask to local working directory
+  writenii(brain_mask, 
+           paste0(getwd(), '/ISBI_Challenge_2015/training/training01/preprocessed/brain_mask_', substr(filepaths[i,1], 74, 78)))
+  
+}
+
+brain_mask_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
+                              pattern = "brain_mask_01", 
+                              full.names = TRUE)
+filepaths = cbind(filepaths, brain_mask_files)
+
+rm(brain_mask1, brain_mask2, brain_mask3, brain_mask4, brain_mask, brain_mask_files)
+```
+
+Now we have all file paths for the input arguments required for `mimosa_training`. Let's apply `mimosa_training` to train the model. We will set `optimal_threshold = seq(0.25, 0.35, 0.01)` in order for the optimal thresholding algorithm to calculate the threshold that optimizes DSC compared to gold standard manually segmented images within these supplied values. We will keep `outdir = NULL` but if you wanted to save all returned objects for all subjects you should specify a vector of file paths with unique IDs.
+
+```{r}
+mimosa_training = mimosa_training(brain_mask = filepaths[,6],
+                                  FLAIR = filepaths[,3], 
+                                  T1 = filepaths[,1], 
+                                  T2 = filepaths[,2], 
+                                  PD = filepaths[,4], 
+                                  tissue = FALSE, 
+                                  gold_standard = filepaths[,5], 
+                                  normalize = TRUE, 
+                                  slices = NULL, 
+                                  orientation = c("axial", "coronal", "sagittal"),
+                                  cores = 1, 
+                                  verbose = TRUE, 
+                                  outdir = NULL, 
+                                  optimal_threshold = seq(0.25, 0.35, 0.01))
+
+names(mimosa_training)
+mimosa_training$mimosa_fit_model
+mimosa_training$estimated_optimal_threshold
+```
+
+The following are always returned from `mimosa_training`:
+
+- `mimosa_fit_model` which is the trained MIMoSA model to be applied to test data
+- `estimated_optimal_threshold` which is the optimal threshold using our optimal thresholding algorithm
+
+The following may be returned to the specified directory from `outdir` (not locally in R) from `mimosa_training`:
+
+- The `mimosa_dataframe` for each subject.
+- The `top_voxels` for each subject.
+- The `smoothed` volumes in `smooth_10` and `smooth_20` for each modality.
+- The `coupling_intercepts` volumes for all coupling combinations.
+- The `coupling_slopes` volumes for all coupling combinations.
+
+To obtain these data, set `outdir = NULL` to a vector of paths which include subject ID. For example, "/path/to/results/ID#_" where the specific "ID#" would be different creating a vector to be input.
+
+2. `mimosa_data` and `mimosa_fit`
+
+When using `mimosa_data` remember we are using local `nifti` objects for `brain_mask`, `FLAIR`, `T1`, `T2`, `PD`, and `gold_standard` not vectors of file paths like `mimosa_training`. In this example we will again use a simple for loop to generate the predictor `data.frame` needed for training. Again, we note that this is not the most efficient computational approach.
+
+Since we only need the predictors `data.frame` which is returned as `$mimosa_dataframe` we store only the `data.frame` in a list.
+
+
+```{r}
+# Initialize an empty list
+mimosa_df_list = list()
+
+for(i in 1:dim(filepaths)[1]){
+  # Load files
+  T1_training = readnii(filepaths[i,1], 
+                        reorient = FALSE)
+  T2_training = readnii(filepaths[i,2], 
+                        reorient = FALSE)
+  FLAIR_training = readnii(filepaths[i,3], 
+                           reorient = FALSE)
+  PD_training = readnii(filepaths[i,4], 
+                        reorient = FALSE)
+  gold_standard = readnii(filepaths[i,5], 
+                          reorient = FALSE)
+  brain_mask = readnii(filepaths[i,6], 
+                       reorient = FALSE)
+  # Obtain the mimosa predictor data.frame
+  
+  mimosa_df_list[[i]] = mimosa_data(brain_mask = brain_mask, 
+                            FLAIR = FLAIR_training, 
+                            T1 = T1_training,
+                            T2 = T2_training, 
+                            PD = PD_training, 
+                            tissue = FALSE, 
+                            gold_standard = gold_standard, 
+                            normalize = TRUE, 
+                            cand_mask = NULL, 
+                            slices = NULL, 
+                            orientation = c("axial", "coronal", "sagittal"), 
+                            cores = 1, 
+                            verbose = TRUE)$mimosa_dataframe
+}
+# Turn list into a single data.frame which has all subjects predictor data.frames
+mimosa_df = rbindlist(mimosa_df_list)
+
+head(mimosa_df)
+dim(mimosa_df)
+```
+
+As you can see the `data.frame` is very large and only contains a few subjects. In cases where you have a full dataset this may be extremely large and it is useful to store individual `data.frames` separately to a directory or all together in a list rather than a giant `data.frame`. The `data.frame` is now ready to train the MIMoSA model. 
+
+Let's use `mimosa_fit` to train the model. We will need to input a formula here for the model. The formula will depend on which image modalities you are using. 
+
+If you have T1, T2, FLAIR, PD:
+
+```{r}
+formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + 
+  PD_10 * PD + PD_20 * PD + 
+  T2_10 * T2 + T2_20 * T2 + 
+  T1_10 * T1 + T1_20 * T1 +
+  FLAIRonT1_intercepts + FLAIRonT2_intercepts + FLAIRonPD_intercepts +
+  T1onT2_intercepts + T1onPD_intercepts + T2onPD_intercepts +
+  T1onFLAIR_intercepts + T2onFLAIR_intercepts + PDonFLAIR_intercepts + 
+  T2onT1_intercepts + PDonT1_intercepts + PDonT2_intercepts +
+  FLAIRonT1_slopes + FLAIRonT2_slopes + FLAIRonPD_slopes +
+  T1onT2_slopes + T1onPD_slopes + T2onPD_slopes +
+  T1onFLAIR_slopes + T2onFLAIR_slopes + PDonFLAIR_slopes +
+  T2onT1_slopes + PDonT1_slopes + PDonT2_slopes
+```
+
+If you have T1, T2, FLAIR:
+
+```{r}
+formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + 
+  T2_10 * T2 + T2_20 * T2 + 
+  T1_10 * T1 + T1_20 * T1 +
+  FLAIRonT1_intercepts + FLAIRonT2_intercepts + 
+  T1onT2_intercepts + T1onFLAIR_intercepts + 
+  T2onFLAIR_intercepts + T2onT1_intercepts +
+  FLAIRonT1_slopes + FLAIRonT2_slopes + 
+  T1onT2_slopes + T1onFLAIR_slopes + 
+  T2onFLAIR_slopes + T2onT1_slopes
+```
+
+If you have T1, FLAIR, PD:
+
+```{r}
+formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + 
+  PD_10 * PD + PD_20 * PD + 
+  T1_10 * T1 + T1_20 * T1 +
+  FLAIRonT1_intercepts + FLAIRonPD_intercepts + 
+  T1onPD_intercepts + T1onFLAIR_intercepts + 
+  PDonFLAIR_intercepts + PDonT1_intercepts +
+  FLAIRonT1_slopes + FLAIRonPD_slopes + 
+  T1onPD_slopes + T1onFLAIR_slopes + 
+  PDonFLAIR_slopes + PDonT1_slopes
+```
+
+If you have T1, FLAIR:
+
+```{r}
+formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + 
+  T1_10 * T1 + T1_20 * T1 +
+  FLAIRonT1_intercepts + T1onFLAIR_intercepts +
+  FLAIRonT1_slopes + T1onFLAIR_slopes
+```
+
+Here we have all images so we will use the full formula.
+
+```{r}
+formula = gold_standard ~ FLAIR_10 * FLAIR + FLAIR_20 * FLAIR + 
+  PD_10 * PD + PD_20 * PD + 
+  T2_10 * T2 + T2_20 * T2 + 
+  T1_10 * T1 + T1_20 * T1 +
+  FLAIRonT1_intercepts + FLAIRonT2_intercepts + FLAIRonPD_intercepts +
+  T1onT2_intercepts + T1onPD_intercepts + T2onPD_intercepts +
+  T1onFLAIR_intercepts + T2onFLAIR_intercepts + PDonFLAIR_intercepts + 
+  T2onT1_intercepts + PDonT1_intercepts + PDonT2_intercepts +
+  FLAIRonT1_slopes + FLAIRonT2_slopes + FLAIRonPD_slopes +
+  T1onT2_slopes + T1onPD_slopes + T2onPD_slopes +
+  T1onFLAIR_slopes + T2onFLAIR_slopes + PDonFLAIR_slopes +
+  T2onT1_slopes + PDonT1_slopes + PDonT2_slopes
+
+mimosa_model = mimosa_fit(mimosa_df, formula = formula)
+
+mimosa_model
+```
+
+Notice the model here is the same as the one obtained using `mimosa_training`. The model is now ready to be applied to test data.
+
+## Apply to Test Subjects
+
+We can apply the model to test subjects to generate probability maps and lesion segmentation masks. To do this we will generate the predictor `data.frame` using `mimosa_data` and then also save the `top_voxels` object returned. We will then apply the model.
+
+First let's obtain the file paths for the test subject so we can load the images into R and run `mimosa_data`.
+
+```{r}
+# The neurobase and mimosa R packages are required for this chunk
+# Note these paths will be to where you have stored the data or to your own data
+
+T1_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
+                      pattern = "mprage_pp[.]nii$", 
+                      full.names = TRUE)
+T2_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
+                      pattern = "t2_pp[.]nii$", 
+                      full.names = TRUE)
+FLAIR_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
+                         pattern = "flair_pp[.]nii$", 
+                         full.names = TRUE)
+PD_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
+                      pattern = "pd_pp[.]nii$", 
+                      full.names = TRUE)
+
+filepaths = cbind(T1_files, T2_files, FLAIR_files, PD_files)
+filepaths
+
+# Load first subject into R
+T1_testing = readnii(filepaths[1,1], 
+                           reorient = FALSE)
+T2_testing = readnii(filepaths[1,2], 
+                           reorient = FALSE)
+FLAIR_testing = readnii(filepaths[1,3], 
+                              reorient = FALSE)
+PD_testing = readnii(filepaths[1,4], 
+                           reorient = FALSE)
+
+# Create a brain mask
+brain_mask1 = T1_training01_01 != 0
+brain_mask2 = T2_training01_01 != 0
+brain_mask3 = FLAIR_training01_01 != 0
+brain_mask4 = PD_training01_01 != 0
+brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
+brain_mask = brain_mask != 0
+
+mimosa_testdata = mimosa_data(brain_mask = brain_mask, 
+                            FLAIR = FLAIR_training, 
+                            T1 = T1_training,
+                            T2 = T2_training, 
+                            PD = PD_training, 
+                            tissue = FALSE, 
+                            gold_standard = gold_standard, 
+                            normalize = TRUE, 
+                            cand_mask = NULL, 
+                            slices = NULL, 
+                            orientation = c("axial", "coronal", "sagittal"), 
+                            cores = 1, 
+                            verbose = TRUE)
+
+mimosa_testdata_df = mimosa_testdata$mimosa_dataframe
+mimosa_candidate_mask = mimosa_testdata$top_voxels
+
+rm(T1_files, T2_files, FLAIR_files, PD_files,
+   brain_mask1, brain_mask2, brain_mask3, brain_mask4, mimosa_testdata)
+```
+
+We can now generate probability maps.
+
+## Generate Probability Maps
+
+We will use the `mimosa_model` to generate probability maps. First we must predict and then we smooth the probability map using adjacent voxel probabilities. 
+
+```{r}
+# The R package fslr is required to smooth the probability map
+predictions = predict(mimosa_model,
+                      newdata = mimosa_testdata_df,
+                      type = 'response')
+probability_map = niftiarr(brain_mask, 0)
+probability_map[mimosa_candidate_mask == 1] = predictions
+
+probability_map = fslsmooth(probability_map, 
+                            sigma = 1.25,
+                            mask = brain_mask, 
+                            retimg = TRUE,
+                            smooth_mask = TRUE)
+```
+
+To visualize the probability map let's use the `ortho2` function.
+
+```{r}
+ortho2(probability_map)
+```
+
+## Generate Predicted Lesion Masks
+
+We are now ready to threshold the probability map to create binary lesion segmentations. We will use the `mimosa_training$estimated_optimal_threshold` as the threshold. The user can also specify their own threshold if they choose.
+
+```{r}
+threshold = mimosa_training$estimated_optimal_threshold
+segmentation_mask = probability_map > threshold
+
+rm(probability_map)
+```
+
+Now let's visualize the masks in a few different ways using `ortho2`.
+
+```{r}
+ortho2(segmentation_mask)
+
+# The R package scales is needed for a few of the next commands
+double_ortho(FLAIR_testing, segmentation_mask, col.y = 'red')
+
+rm(segmentation_mask)
+```
+
+## Evaluate Performance
+
+If you are evaluating the performance of a segmentation using a gold standard manual segmentation or otherwise you can use the `count_stats` function to provide some summary measures of performance. This function will calculate and returns the true positive rate (TPR), false positive rate (FPR), false negative rate (FNR), false positive count (FPC), and sensitivity (S) based on the lesion count.
+
+These metrics are not explicitly defined in the literature so formulas of their calculate are shown.
+
+$$\text{True Positive Rate} = \dfrac{\text{Number of Predicted Lesions that Overlap Gold Standard}}{\text{Gold Standard Count}}$$
+
+$$\text{False Positive Rate} = \dfrac{\text{Number of False Positives}}{\text{Predicted Lesion Mask Count}}$$
+
+$$\text{False Negative Rate} = \dfrac{\text{Number of False Negatives}}{\text{Gold Standard Count}}$$
+
+where here you can specify a proportion of overlap `percent_overlap` required to count the predicted lesion as truly overlapping the gold standard.
+
+$$\text{False Positive Count} = \text{Number of Lesion in Predicted Mask Not Overlapping A Gold Standard Lesion}$$
+
+$$\text{Sensitivity} = \dfrac{\text{True Positive Rate}}{\text{True Positive Rate} + \text{False Negative Rate}}$$
+
+Let's show an example of applying `count_stats`. For this let's use the training data again since we have gold standard segmentations to compare our predicted segmentations. We will use the `mimosa_model` trained in previous steps to generate probability maps and predicted lesion segmentation masks. 
+
+For this, let's only use the training01 subject data and only the first time point.
+
+```{r, eval = FALSE}
+
+# Set eval = TRUE on cluster
+
+# Read in images
+T1 = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
+                        pattern = "01_mprage_pp[.]nii$", 
+                        full.names = TRUE), 
+             reorient = FALSE)
+T2 = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
+                        pattern = "01_t2_pp[.]nii$", 
+                        full.names = TRUE),
+             reorient = FALSE)
+FLAIR = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
+                           pattern = "01_flair_pp[.]nii$", 
+                           full.names = TRUE),
+                reorient = FALSE)
+PD = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
+                        pattern = "01_pd_pp[.]nii$", 
+                        full.names = TRUE), 
+             reorient = FALSE)
+gold_standard = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/masks', 
+                                   pattern = "01_mask2[.]nii$", 
+                                   full.names = TRUE),
+                        reorient = FALSE)
+
+# Create a brain mask
+brain_mask1 = T1_training01_01 != 0
+brain_mask2 = T2_training01_01 != 0
+brain_mask3 = FLAIR_training01_01 != 0
+brain_mask4 = PD_training01_01 != 0
+brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
+brain_mask = brain_mask != 0
+
+# Obtain predictor matrix
+training02_01_data = mimosa_data(brain_mask = brain_mask, 
+                            FLAIR = FLAIR, 
+                            T1 = T1,
+                            T2 = T2, 
+                            PD = PD, 
+                            tissue = FALSE, 
+                            gold_standard = gold_standard, 
+                            normalize = TRUE, 
+                            cand_mask = NULL, 
+                            slices = NULL, 
+                            orientation = c("axial", "coronal", "sagittal"), 
+                            cores = 1, 
+                            verbose = TRUE)
+
+# Create predictions based on trained model
+predictions = predict(mimosa_model,
+                      newdata = training02_01_data$mimosa_dataframe,
+                      type = 'response')
+
+# Create a probability map
+probability_map = niftiarr(brain_mask, 0)
+probability_map[training02_01_data$top_voxels == 1] = predictions
+
+probability_map = fslsmooth(probability_map, 
+                            sigma = 1.25,
+                            mask = brain_mask, 
+                            retimg = TRUE,
+                            smooth_mask = TRUE)
+
+# Threshold probability map to create segmentation mask
+threshold = mimosa_training$estimated_optimal_threshold
+segmentation_mask = probability_map > threshold
+
+# Generate summary measures for performance
+count_stats(gold_standard = gold_standard, 
+            predicted_segmentation = segmentation_mask, 
+            k = 27, 
+            percent_overlap = 0.2, 
+            verbose = TRUE)
+```
+
+## Pre-Trained Models
+
+The method performs best when trained on data. Since gold standard manual segmentations are not always delineated though through the mimosa package we have trained four (4) distinct models for use. These models can be called and are stored under the following names:
+
+- mimosa_model trained using FLAIR, T1, T2, and PD imaging modalities
+- mimosa_model_No_PD trained using FLAIR, T1, and T2 imaging modalities
+- mimosa_model_No_T2 trained using FLAIR, T1, and PD imaging modalities
+- mimosa_model_No_PD_T2 trained using FLAIR and T1 imaging modalities
+
+Since this model is already trained you can skip the "Train the MIMoSA Model" section and go straight to "Apply to Test Subjects" through "Generate Predicted Lesion Masks" and you can obtain predicted lesion masks. This is because in the "Train the MIMoSA Model" section we generated a model `mimosa_model` and the fully trained model available through the package is also named `mimosa_model`.
+
+
+
