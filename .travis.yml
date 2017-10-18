@@ -72,3 +72,4 @@ after_deploy:
       Rscript -e 'covr::coveralls(type = "all")' ;
     fi
 
+
