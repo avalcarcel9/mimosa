@@ -27,7 +27,7 @@
 #' @param optimal_threshold NULL. To run algorithm provide vector of thresholds
 #' @export
 #' @importFrom neurobase writenii readnii niftiarr
-#' @importFrom data.table rbindlist
+#' @importFrom dplyr bind_rows
 #' @importFrom stats predict
 #' @importFrom fslr fslsmooth
 #' @importFrom utils write.csv
@@ -36,6 +36,7 @@
 #' @examples \dontrun{
 #'
 #'}
+#### #' @importFrom data.table rbindlist
 
 mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
                             gold_standard, normalize = TRUE, slices = NULL,
@@ -189,7 +190,8 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
   }
 
   # Transform list to dataframe so that we can fit the MIMoSA model
-  train_dataframe_all = rbindlist(train_data_all_list)
+  # train_dataframe_all = rbindlist(train_data_all_list)
+  train_dataframe_all = dplyr::bind_rows(train_data_all_list)
 
   if (verbose) {
     message(paste0('# Fitting MIMoSA Model'))
@@ -204,7 +206,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
     return(mimosa_fit_model)
   }
   if (!is.null(optimal_threshold)){
-    
+
     # Initialize a storage matrix for DSC values
     dsc_mat = matrix(NA, nrow = length(train_data_all_list), ncol = length(optimal_threshold))
 
