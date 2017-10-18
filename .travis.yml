@@ -24,6 +24,8 @@ before_install:
   - cat ${fname}; source ${fname}; rm ${fname}
   - Rscript -e 'source("https://install-github.me/mangothecat/callr")'
   - cat DESCRIPTION
+  - start_xvfb ;
+  - no_open_mp ;   
   - remove_neuroc_packages
   - export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
   # does all the clang exports
