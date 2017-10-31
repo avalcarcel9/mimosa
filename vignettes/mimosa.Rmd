@@ -9,6 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
 ## Overview
 
 The mimosa package trains and makes predictions from the MIMoSA method. Access to the full paper can be found [here](http://www.biorxiv.org/content/early/2017/06/15/150284). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
@@ -61,9 +66,6 @@ If you have your own data you can adapt code provided here and apply the methods
 Before loading the data into R let's first organize the image file paths into a `matrix`.
 
 
-```{r setup, eval = FALSE, echo = FALSE}
-knitr::opts_knit$set(eval = FALSE)
-```
 
 ```{r, echo = FALSE}
 info = Sys.info()
@@ -125,7 +127,7 @@ For this example, data are preprocessed for us. That is, they have been inhomoge
 
 Once data are preprocessed we can create a `data.frame` of predictors using the `mimosa_data` function which creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes. The user only needs FLAIR and T1 sequences but performance may suffer qualitatively. When training the model binary lesion masks are also required. The function returns a tissue mask, the candidate voxels mask for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method. 
 
-```{r, warning = FALSE}
+```{r, warning = FALSE, eval = FALSE}
 # The R package neurobase is needed for the readnii function
 T1_training01_01 = readnii(filepaths$T1[1])
 T2_training01_01 = readnii(filepaths$T2[1])
