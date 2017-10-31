@@ -21,7 +21,6 @@ BugReports: https://github.com/avalcarcel9/mimosa/issues
 Suggests: testthat,
     covr,
     knitr,
-    rmarkdown,
-    scales
+    rmarkdown
 VignetteBuilder: knitr
 
