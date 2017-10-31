@@ -32,11 +32,12 @@ When going through this tutorial be sure your package is up to date. You will al
 ```{r, warning = FALSE, message = FALSE}
 library(neurobase)
 library(mimosa)
-library(data.table)
+# library(data.table)
+library(dplyr)
 library(oasis)
 library(fslr)
-library(scales)
-library(tidyverse)
+# library(scales)
+# library(tidyverse)
 ```
 
 ## Tutorial Data
@@ -60,30 +61,53 @@ If you have your own data you can adapt code provided here and apply the methods
 Before loading the data into R let's first organize the image file paths into a `matrix`.
 
 
-```{r, setup, echo = FALSE}
-knitr::opts_knit$set(root.dir = '/Users/alval/Documents')
+```{r setup, eval = FALSE, echo = FALSE}
+knitr::opts_knit$set(eval = FALSE)
 ```
 
-
+```{r, echo = FALSE}
+info = Sys.info()
+user = info[["user"]]
+if (grepl("muschel", user )) {
+  data_dir = "~/Desktop/"
+} else {
+  data_dir = "/Users/alval/Documents"
+}
+```
 
 ```{r}
-# Note these paths will be to where you have stored the data or to your own data
-T1_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
-                      pattern = "mprage_pp[.]nii$", 
+# Note these paths will be to where you 
+# have stored the data or to your own data
+train_dir = file.path(data_dir, "training01")
+
+T1_files = list.files(path = 
+                        file.path(train_dir,
+                                  "preprocessed"), 
+                      pattern = "mprage_pp[.]nii", 
                       full.names = TRUE)
-T2_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
-                      pattern = "t2_pp[.]nii$", 
+T2_files = list.files(path = 
+                        file.path(train_dir,
+                                  "preprocessed"), 
+                      pattern = "t2_pp[.]nii", 
                       full.names = TRUE)
-FLAIR_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
-                         pattern = "flair_pp[.]nii$", 
+FLAIR_files = list.files(path = 
+                           file.path(train_dir,
+                                     "preprocessed"), 
+                         pattern = "flair_pp[.]nii", 
                          full.names = TRUE)
-PD_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
-                      pattern = "pd_pp[.]nii$", 
+PD_files = list.files(path = 
+                        file.path(train_dir,
+                                  "preprocessed"), 
+                      pattern = "pd_pp[.]nii", 
                       full.names = TRUE)
-GS_files = list.files(path = 'ISBI_Challenge_2015/training/training01/masks', 
-                      pattern = "mask2[.]nii$", 
+GS_files = list.files(path = 
+                        file.path(train_dir,
+                                  "masks"), 
+                      pattern = "mask2[.]nii", 
                       full.names = TRUE)
-filepaths = cbind(T1_files, T2_files, FLAIR_files, PD_files, GS_files)
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, GS = GS_files, stringsAsFactors = FALSE)
+ss = strsplit(nii.stub(filepaths$T1), split = "_")
+filepaths$visit_id = sapply(ss, function(x) x[2])
 filepaths
 ```
 
@@ -103,16 +127,11 @@ Once data are preprocessed we can create a `data.frame` of predictors using the 
 
 ```{r, warning = FALSE}
 # The R package neurobase is needed for the readnii function
-T1_training01_01 = readnii(filepaths[1,1], 
-                           reorient = FALSE)
-T2_training01_01 = readnii(filepaths[1,2], 
-                           reorient = FALSE)
-FLAIR_training01_01 = readnii(filepaths[1,3], 
-                              reorient = FALSE)
-PD_training01_01 = readnii(filepaths[1,4], 
-                           reorient = FALSE)
-gold_standard = readnii(filepaths[1,5], 
-                        reorient = FALSE)
+T1_training01_01 = readnii(filepaths$T1[1])
+T2_training01_01 = readnii(filepaths$T2[1])
+FLAIR_training01_01 = readnii(filepaths$FLAIR[1])
+PD_training01_01 = readnii(filepaths$PD[1])
+gold_standard = readnii(filepaths$GS[1])
 ```
 
 Before making the predictor data let's just visualize the loaded data.
@@ -123,7 +142,7 @@ sequence = list(FLAIR = FLAIR_training01_01,
                 T2 = T2_training01_01,
                 PD = PD_training01_01)
 multi_overlay(sequence,
-              z = floor(nsli(sequence[[1]])/2),
+              z = floor(oro.nifti::nsli(sequence[[1]])/2),
               text = names(sequence),
               text.y = rep(1.4, length(sequence)),
               text.cex = rep(2.5, length(sequence))
@@ -134,29 +153,42 @@ rm(sequence)
 Let's first create a brain mask by taking the union of positive voxels in the T1, T2, PD, and FLAIR. We use the union in order to include all voxels across all images with brain matter. The difference in these is typically only near the skull and will not be important after the selection of candidate voxels. We can then create the training `data.frame` for the sequence loaded in memory. The preprocessing carried out previously did not normalize the data therefore we will set `normalize = TRUE`. We are supplying the brain mask rather than a tissue mask so we set `tissue = FALSE`. If you supply the tissue mask as the `brain_mask` you can set `tissue = TRUE`.
 
 ```{r}
+create_brain_mask = function(...) {
+  x = list(...)
+  x = check_nifti(x)
+  x = lapply(x, function(img) {
+    img > 0
+  })
+  mask = Reduce("|", x)
+  mask = datatyper(mask)
+  mask
+}
+```
+
+```{r}
 # Create a brain mask
-brain_mask1 = T1_training01_01 != 0
-brain_mask2 = T2_training01_01 != 0
-brain_mask3 = FLAIR_training01_01 != 0
-brain_mask4 = PD_training01_01 != 0
-brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
-brain_mask = brain_mask != 0
+brain_mask = create_brain_mask(
+  T1_training01_01, 
+  T2_training01_01,
+  FLAIR_training01_01,
+  PD_training01_01
+)
 
 # The mimosa R package is needed to run mimosa_data
-
-mimosa_data = mimosa_data(brain_mask = brain_mask, 
-                          FLAIR = FLAIR_training01_01, 
-                          T1 = T1_training01_01, 
-                          T2 = T2_training01_01, 
-                          PD = PD_training01_01, 
-                          tissue = FALSE, 
-                          gold_standard = gold_standard, 
-                          normalize = TRUE, 
-                          cand_mask = NULL, 
-                          slices = NULL, 
-                          orientation = c("axial", "coronal", "sagittal"), 
-                          cores = 1, 
-                          verbose = TRUE)
+mimosa_data = mimosa_data(
+  brain_mask = brain_mask, 
+  FLAIR = FLAIR_training01_01, 
+  T1 = T1_training01_01, 
+  T2 = T2_training01_01, 
+  PD = PD_training01_01, 
+  tissue = FALSE, 
+  gold_standard = gold_standard, 
+  normalize = TRUE, 
+  cand_mask = NULL, 
+  slices = NULL, 
+  orientation = c("axial", "coronal", "sagittal"), 
+  cores = 1, 
+  verbose = TRUE)
 ```
 
 A note on the returned objects:
@@ -213,55 +245,57 @@ Unlike `mimosa_data` here `brain_mask`, `FLAIR`, `T1`, `T2`, `PD`, and `gold_sta
 Since we need to supply vectors of file paths and not local objects when applying this function. We will need to create brain masks for each subject and add them to the `matrix` `filepaths`. After that, we will use the same arguments as in the `mimosa_data` example.
 
 ```{r}
+filepaths$brainmask = NA
+
 # The neurobase R package is required to read and write images
-for(i in 1:dim(filepaths)[1]){
+for (i in seq(nrow(filepaths))) {
   # Load files
-  T1_training = readnii(filepaths[i,1], 
+  T1_training = readnii(filepaths$T1[i],
                         reorient = FALSE)
-  T2_training = readnii(filepaths[i,2], 
+  T2_training = readnii(filepaths$T2[i],
                         reorient = FALSE)
-  FLAIR_training = readnii(filepaths[i,3], 
+  FLAIR_training = readnii(filepaths$FLAIR[i],
                            reorient = FALSE)
-  PD_training = readnii(filepaths[i,4], 
+  PD_training = readnii(filepaths$PD[i],
                         reorient = FALSE)
-  # Calculate brain mask
-  brain_mask1 = T1_training01_01 != 0
-  brain_mask2 = T2_training01_01 != 0
-  brain_mask3 = FLAIR_training01_01 != 0
-  brain_mask4 = PD_training01_01 != 0
-  brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
-  brain_mask = brain_mask != 0
+  brain_mask = create_brain_mask(
+    T1_training01_01, 
+    T2_training01_01,
+    FLAIR_training01_01,
+    PD_training01_01
+  )
+  
+  
+  visit_id = filepaths$visit_id[i]
+  fname = file.path(train_dir, 
+                    "preprocessed", 
+                    paste0("brainmask_",
+                           visit_id, ".nii.gz"))
   # Save brain mask to local working directory
   writenii(brain_mask, 
-           paste0(getwd(), '/ISBI_Challenge_2015/training/training01/preprocessed/brain_mask_', substr(filepaths[i,1], 74, 78)))
-  
+           filename = fname)
+  filepaths$brainmask[i] = fname
 }
-
-brain_mask_files = list.files(path = 'ISBI_Challenge_2015/training/training01/preprocessed', 
-                              pattern = "brain_mask_01", 
-                              full.names = TRUE)
-filepaths = cbind(filepaths, brain_mask_files)
-
-rm(brain_mask1, brain_mask2, brain_mask3, brain_mask4, brain_mask, brain_mask_files)
 ```
 
 Now we have all file paths for the input arguments required for `mimosa_training`. Let's apply `mimosa_training` to train the model. We will set `optimal_threshold = seq(0.25, 0.35, 0.01)` in order for the optimal thresholding algorithm to calculate the threshold that optimizes DSC compared to gold standard manually segmented images within these supplied values. We will keep `outdir = NULL` but if you wanted to save all returned objects for all subjects you should specify a vector of file paths with unique IDs.
 
 ```{r}
-mimosa_training = mimosa_training(brain_mask = filepaths[,6],
-                                  FLAIR = filepaths[,3], 
-                                  T1 = filepaths[,1], 
-                                  T2 = filepaths[,2], 
-                                  PD = filepaths[,4], 
-                                  tissue = FALSE, 
-                                  gold_standard = filepaths[,5], 
-                                  normalize = TRUE, 
-                                  slices = NULL, 
-                                  orientation = c("axial", "coronal", "sagittal"),
-                                  cores = 1, 
-                                  verbose = TRUE, 
-                                  outdir = NULL, 
-                                  optimal_threshold = seq(0.25, 0.35, 0.01))
+mimosa_training = mimosa_training(
+  brain_mask = filepaths$brainmask,
+  FLAIR = filepaths$FLAIR,
+  T1 = filepaths$T1,
+  T2 = filepaths$T2,
+  PD = filepaths$PD,
+  tissue = FALSE, 
+  gold_standard = filepaths$GS,
+  normalize = TRUE, 
+  slices = NULL, 
+  orientation = c("axial", "coronal", "sagittal"),
+  cores = 1, 
+  verbose = TRUE, 
+  outdir = NULL, 
+  optimal_threshold = seq(0.25, 0.35, 0.01))
 
 names(mimosa_training)
 mimosa_training$mimosa_fit_model
@@ -293,39 +327,35 @@ Since we only need the predictors `data.frame` which is returned as `$mimosa_dat
 ```{r}
 # Initialize an empty list
 mimosa_df_list = list()
+names(mimosa_df_list) = filepaths$visit_id
 
-for(i in 1:dim(filepaths)[1]){
+for (i in seq(nrow(filepaths))) {
   # Load files
-  T1_training = readnii(filepaths[i,1], 
-                        reorient = FALSE)
-  T2_training = readnii(filepaths[i,2], 
-                        reorient = FALSE)
-  FLAIR_training = readnii(filepaths[i,3], 
-                           reorient = FALSE)
-  PD_training = readnii(filepaths[i,4], 
-                        reorient = FALSE)
-  gold_standard = readnii(filepaths[i,5], 
-                          reorient = FALSE)
-  brain_mask = readnii(filepaths[i,6], 
-                       reorient = FALSE)
+  T1_training = readnii(filepaths$T1[i])
+  T2_training = readnii(filepaths$T2[i])
+  FLAIR_training = readnii(filepaths$FLAIR[i])
+  PD_training = readnii(filepaths$PD[i])
+  gold_standard = readnii(filepaths$GS[i])
+  brain_mask = readnii(filepaths$brainmask[i])
   # Obtain the mimosa predictor data.frame
   
-  mimosa_df_list[[i]] = mimosa_data(brain_mask = brain_mask, 
-                            FLAIR = FLAIR_training, 
-                            T1 = T1_training,
-                            T2 = T2_training, 
-                            PD = PD_training, 
-                            tissue = FALSE, 
-                            gold_standard = gold_standard, 
-                            normalize = TRUE, 
-                            cand_mask = NULL, 
-                            slices = NULL, 
-                            orientation = c("axial", "coronal", "sagittal"), 
-                            cores = 1, 
-                            verbose = TRUE)$mimosa_dataframe
+  mimosa_df_list[[i]] = mimosa_data(
+    brain_mask = brain_mask, 
+    FLAIR = FLAIR_training, 
+    T1 = T1_training,
+    T2 = T2_training, 
+    PD = PD_training, 
+    tissue = FALSE, 
+    gold_standard = gold_standard, 
+    normalize = TRUE, 
+    cand_mask = NULL, 
+    slices = NULL, 
+    orientation = c("axial", "coronal", "sagittal"), 
+    cores = 1, 
+    verbose = TRUE)$mimosa_dataframe
 }
 # Turn list into a single data.frame which has all subjects predictor data.frames
-mimosa_df = rbindlist(mimosa_df_list)
+mimosa_df = dplyr::bind_rows(mimosa_df_list, .id = "visit_id")
 
 head(mimosa_df)
 dim(mimosa_df)
@@ -421,54 +451,57 @@ First let's obtain the file paths for the test subject so we can load the images
 ```{r}
 # The neurobase and mimosa R packages are required for this chunk
 # Note these paths will be to where you have stored the data or to your own data
+test_dir = file.path(data_dir, "test01")
 
-T1_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
-                      pattern = "mprage_pp[.]nii$", 
+T1_files = list.files(
+  path = file.path(test_dir, "preprocessed"), 
+                      pattern = "mprage_pp[.]nii", 
                       full.names = TRUE)
-T2_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
-                      pattern = "t2_pp[.]nii$", 
+T2_files = list.files(
+    path = file.path(test_dir, "preprocessed"), 
+                      pattern = "t2_pp[.]nii", 
                       full.names = TRUE)
-FLAIR_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
-                         pattern = "flair_pp[.]nii$", 
+FLAIR_files = list.files(
+    path = file.path(test_dir, "preprocessed"), 
+                         pattern = "flair_pp[.]nii", 
                          full.names = TRUE)
-PD_files = list.files(path = 'ISBI_Challenge_2015/testdata_website/test01/preprocessed', 
-                      pattern = "pd_pp[.]nii$", 
+PD_files = list.files(
+    path = file.path(test_dir, "preprocessed"), 
+                      pattern = "pd_pp[.]nii", 
                       full.names = TRUE)
 
-filepaths = cbind(T1_files, T2_files, FLAIR_files, PD_files)
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, stringsAsFactors = FALSE)
 filepaths
 
 # Load first subject into R
-T1_testing = readnii(filepaths[1,1], 
-                           reorient = FALSE)
-T2_testing = readnii(filepaths[1,2], 
-                           reorient = FALSE)
-FLAIR_testing = readnii(filepaths[1,3], 
-                              reorient = FALSE)
-PD_testing = readnii(filepaths[1,4], 
-                           reorient = FALSE)
+T1_testing = readnii(filepaths$T1[1])
+T2_testing = readnii(filepaths$T2[1])
+FLAIR_testing = readnii(filepaths$FLAIR[1])
+PD_testing = readnii(filepaths$PD[1])
 
 # Create a brain mask
-brain_mask1 = T1_training01_01 != 0
-brain_mask2 = T2_training01_01 != 0
-brain_mask3 = FLAIR_training01_01 != 0
-brain_mask4 = PD_training01_01 != 0
-brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
-brain_mask = brain_mask != 0
+# Create a brain mask
+brain_mask = create_brain_mask(
+  T1_testing, 
+  T2_testing,
+  FLAIR_testing,
+  PD_testing
+)
 
-mimosa_testdata = mimosa_data(brain_mask = brain_mask, 
-                            FLAIR = FLAIR_training, 
-                            T1 = T1_training,
-                            T2 = T2_training, 
-                            PD = PD_training, 
-                            tissue = FALSE, 
-                            gold_standard = gold_standard, 
-                            normalize = TRUE, 
-                            cand_mask = NULL, 
-                            slices = NULL, 
-                            orientation = c("axial", "coronal", "sagittal"), 
-                            cores = 1, 
-                            verbose = TRUE)
+mimosa_testdata = mimosa_data(
+  brain_mask = brain_mask, 
+  FLAIR = FLAIR_training, 
+  T1 = T1_training,
+  T2 = T2_training, 
+  PD = PD_training, 
+  tissue = FALSE, 
+  gold_standard = gold_standard, 
+  normalize = TRUE, 
+  cand_mask = NULL, 
+  slices = NULL, 
+  orientation = c("axial", "coronal", "sagittal"), 
+  cores = 1, 
+  verbose = TRUE)
 
 mimosa_testdata_df = mimosa_testdata$mimosa_dataframe
 mimosa_candidate_mask = mimosa_testdata$top_voxels
@@ -549,53 +582,75 @@ Let's show an example of applying `count_stats`. For this let's use the training
 For this, let's only use the training01 subject data and only the first time point.
 
 ```{r, eval = FALSE}
-
 # Set eval = TRUE on cluster
+train2_dir = file.path(data_dir, "training02")
 
 # Read in images
-T1 = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
-                        pattern = "01_mprage_pp[.]nii$", 
-                        full.names = TRUE), 
-             reorient = FALSE)
-T2 = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
-                        pattern = "01_t2_pp[.]nii$", 
-                        full.names = TRUE),
-             reorient = FALSE)
-FLAIR = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
-                           pattern = "01_flair_pp[.]nii$", 
-                           full.names = TRUE),
-                reorient = FALSE)
-PD = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/preprocessed', 
-                        pattern = "01_pd_pp[.]nii$", 
-                        full.names = TRUE), 
-             reorient = FALSE)
-gold_standard = readnii(list.files(path = 'ISBI_Challenge_2015/training/training02/masks', 
-                                   pattern = "01_mask2[.]nii$", 
-                                   full.names = TRUE),
-                        reorient = FALSE)
+T1_files = list.files(
+  path = 
+    file.path(train2_dir,
+              "preprocessed"), 
+  pattern = "mprage_pp[.]nii", 
+  full.names = TRUE)
+T2_files = list.files(
+  path = 
+    file.path(train2_dir,
+              "preprocessed"), 
+  pattern = "t2_pp[.]nii", 
+  full.names = TRUE)
+FLAIR_files = list.files(
+  path = 
+    file.path(train2_dir,
+              "preprocessed"), 
+  pattern = "flair_pp[.]nii", 
+  full.names = TRUE)
+PD_files = list.files(
+  path = 
+    file.path(train2_dir,
+              "preprocessed"), 
+  pattern = "pd_pp[.]nii", 
+  full.names = TRUE)
+GS_files = list.files(
+  path = 
+    file.path(train2_dir,
+              "masks"), 
+  pattern = "mask2[.]nii", 
+  full.names = TRUE)
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, GS = GS_files, stringsAsFactors = FALSE)
+ss = strsplit(nii.stub(filepaths$T1), split = "_")
+filepaths$visit_id = sapply(ss, function(x) x[2])
+filepaths
+
+T1 = filepaths$T1[1]
+T2 = filepaths$T2[1]
+FLAIR = filepaths$FLAIR[1]
+PD = filepaths$PD[1]
+gold_standard = filepaths$GS[1]
+
 
 # Create a brain mask
-brain_mask1 = T1_training01_01 != 0
-brain_mask2 = T2_training01_01 != 0
-brain_mask3 = FLAIR_training01_01 != 0
-brain_mask4 = PD_training01_01 != 0
-brain_mask = brain_mask1 + brain_mask2 + brain_mask3 + brain_mask4
-brain_mask = brain_mask != 0
+brain_mask = create_brain_mask(
+  T1, 
+  T2,
+  FLAIR,
+  PD
+)
 
 # Obtain predictor matrix
-training02_01_data = mimosa_data(brain_mask = brain_mask, 
-                            FLAIR = FLAIR, 
-                            T1 = T1,
-                            T2 = T2, 
-                            PD = PD, 
-                            tissue = FALSE, 
-                            gold_standard = gold_standard, 
-                            normalize = TRUE, 
-                            cand_mask = NULL, 
-                            slices = NULL, 
-                            orientation = c("axial", "coronal", "sagittal"), 
-                            cores = 1, 
-                            verbose = TRUE)
+training02_01_data = mimosa_data(
+  brain_mask = brain_mask, 
+  FLAIR = FLAIR, 
+  T1 = T1,
+  T2 = T2, 
+  PD = PD, 
+  tissue = FALSE, 
+  gold_standard = gold_standard, 
+  normalize = TRUE, 
+  cand_mask = NULL, 
+  slices = NULL, 
+  orientation = c("axial", "coronal", "sagittal"), 
+  cores = 1, 
+  verbose = TRUE)
 
 # Create predictions based on trained model
 predictions = predict(mimosa_model,
