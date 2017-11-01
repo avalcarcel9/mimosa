@@ -66,8 +66,12 @@ info = Sys.info()
 user = info[["user"]]
 if (grepl("muschel", user )) {
   data_dir = "~/Desktop/"
+  train_data_dir = data_dir
+  test_data_dir = data_dir
 } else {
-  data_dir = "/Users/alval/Documents"
+  data_dir = "/Users/alval/Documents/ISBI_Challenge_2015/"
+  train_data_dir = file.path(data_dir, "training")
+  test_data_dir = file.path(data_dir, "testdata_website")
 }
 train_dir = file.path(data_dir, "training01")
 eval = FALSE # don't run
@@ -79,7 +83,7 @@ knitr::opts_chunk$set(eval = eval)
 ```{r}
 # Note these paths will be to where you 
 # have stored the data or to your own data
-train_dir = file.path(data_dir, "training01")
+train_dir = file.path(train_data_dir, "training01")
 
 T1_files = list.files(path = 
                         file.path(train_dir,
@@ -450,7 +454,7 @@ First let's obtain the file paths for the test subject so we can load the images
 ```{r}
 # The neurobase and mimosa R packages are required for this chunk
 # Note these paths will be to where you have stored the data or to your own data
-test_dir = file.path(data_dir, "test01")
+test_dir = file.path(test_data_dir, "test01")
 
 T1_files = list.files(
   path = file.path(test_dir, "preprocessed"), 
@@ -586,7 +590,7 @@ For this, let's only use the training01 subject data and only the first time poi
 
 ```{r, eval = FALSE}
 # Set eval = TRUE on cluster
-train2_dir = file.path(data_dir, "training02")
+train2_dir = file.path(train_data_dir, "training02")
 
 # Read in images
 T1_files = list.files(
