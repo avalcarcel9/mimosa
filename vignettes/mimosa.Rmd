@@ -9,7 +9,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 ## Overview
 
 The mimosa package trains and makes predictions from the MIMoSA method. Access to the full paper can be found [here](http://www.biorxiv.org/content/early/2017/06/15/150284). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
@@ -53,8 +52,7 @@ After going to [2015 Longitudinal Multiple Sclerosis Lesion Segmentation Challen
 
 The data consists of a set of training subjects in the training folder for which we have 2 sets of gold standard manual segmentations and 14 test subjects for which there are no gold standard manual segmentations provided. Each subject may have data for multiple time points. After downloading these data, I put the training and testdata_website data into a folder ISBI_Challenge_2015.
 
-For these analysis, we will use the ISBI_Challenge_2015/training/training01/preprocessed data to train the model using the gold standard manually segmented images in  ISBI_Challenge_2015/training/masks/training01_0#_mask2.nii. We will then apply the trained model on ISBI_Challenge_2015/testdata_website/test01/preprocessed/ images to generate probability maps and MIMoSA predicted lesion masks. We will also use ISBI_Challenge_2015/training/training02/preprocessed/ data from the first time point to evaluate performance.
-
+For these analysis, we will use the ISBI_Challenge_2015/training/training01/preprocessed data to train the model using the gold standard manually segmented images in  ISBI_Challenge_2015/training/masks/training01_0#\_mask2.nii. We will then apply the trained model on ISBI_Challenge_2015/testdata_website/test01/preprocessed/ images to generate probability maps and MIMoSA predicted lesion masks. We will also use ISBI_Challenge_2015/training/training02/preprocessed/ data from the first time point to evaluate performance.
 If you have your own data you can adapt code provided here and apply the methods to your own data. For this reason, all code provided is intended to provide a direct application of methods therefore speed and efficiency were sacrificed in the examples provided.
 
 ### Creating a filename `matrix`
@@ -73,7 +71,7 @@ if (grepl("muschel", user )) {
 }
 train_dir = file.path(data_dir, "training01")
 eval = FALSE # don't run
-eval = file.exists(train_dir) || eval
+eval = file.exists(train_dir) && eval
 knitr::opts_chunk$set(eval = eval)
 ```
 
@@ -253,30 +251,26 @@ filepaths$brainmask = NA
 # The neurobase R package is required to read and write images
 for (i in seq(nrow(filepaths))) {
   # Load files
-  T1_training = readnii(filepaths$T1[i],
-                        reorient = FALSE)
-  T2_training = readnii(filepaths$T2[i],
-                        reorient = FALSE)
-  FLAIR_training = readnii(filepaths$FLAIR[i],
-                           reorient = FALSE)
-  PD_training = readnii(filepaths$PD[i],
-                        reorient = FALSE)
-  brain_mask = create_brain_mask(
-    T1_training01_01, 
-    T2_training01_01,
-    FLAIR_training01_01,
-    PD_training01_01
-  )
-  
-  
   visit_id = filepaths$visit_id[i]
   fname = file.path(train_dir, 
                     "preprocessed", 
                     paste0("brainmask_",
                            visit_id, ".nii.gz"))
+  if (!file.exists(fname)) {
+    T1_training = readnii(filepaths$T1[i])
+    T2_training = readnii(filepaths$T2[i])
+    FLAIR_training = readnii(filepaths$FLAIR[i])
+    PD_training = readnii(filepaths$PD[i])
+    brain_mask = create_brain_mask(
+      T1_training,
+      T2_training,
+      FLAIR_training,
+      PD_training
+    )
   # Save brain mask to local working directory
   writenii(brain_mask, 
            filename = fname)
+  }
   filepaths$brainmask[i] = fname
 }
 ```
@@ -299,7 +293,7 @@ mimosa_training = mimosa_training(
   verbose = TRUE, 
   outdir = NULL, 
   optimal_threshold = seq(0.25, 0.35, 0.01))
-
+ 
 names(mimosa_training)
 mimosa_training$mimosa_fit_model
 mimosa_training$estimated_optimal_threshold
@@ -318,7 +312,8 @@ The following may be returned to the specified directory from `outdir` (not loca
 - The `coupling_intercepts` volumes for all coupling combinations.
 - The `coupling_slopes` volumes for all coupling combinations.
 
-To obtain these data, set `outdir = NULL` to a vector of paths which include subject ID. For example, "/path/to/results/ID#_" where the specific "ID#" would be different creating a vector to be input.
+To obtain these data, set `outdir = NULL` to a vector of paths which include subject ID. For example, "/path/to/results/ID#\_" where the specific "ID#" would be different creating a vector to be input.
+
 
 2. `mimosa_data` and `mimosa_fit`
 
@@ -329,7 +324,8 @@ Since we only need the predictors `data.frame` which is returned as `$mimosa_dat
 
 ```{r}
 # Initialize an empty list
-mimosa_df_list = list()
+mimosa_df_list = vector(mode = "list",
+  length = nrow(filepaths))
 names(mimosa_df_list) = filepaths$visit_id
 
 for (i in seq(nrow(filepaths))) {
@@ -473,7 +469,9 @@ PD_files = list.files(
                       pattern = "pd_pp[.]nii", 
                       full.names = TRUE)
 
-filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, stringsAsFactors = FALSE)
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, 
+  FLAIR = FLAIR_files, PD = PD_files, 
+  stringsAsFactors = FALSE)
 filepaths
 
 # Load first subject into R
@@ -510,7 +508,7 @@ mimosa_testdata_df = mimosa_testdata$mimosa_dataframe
 mimosa_candidate_mask = mimosa_testdata$top_voxels
 
 rm(T1_files, T2_files, FLAIR_files, PD_files,
-   brain_mask1, brain_mask2, brain_mask3, brain_mask4, mimosa_testdata)
+  mimosa_testdata)
 ```
 
 We can now generate probability maps.
@@ -558,6 +556,8 @@ ortho2(segmentation_mask)
 
 # The R package scales is needed for a few of the next commands
 double_ortho(FLAIR_testing, segmentation_mask, col.y = 'red')
+ortho2(FLAIR_testing, segmentation_mask, 
+  col.y = "#FF000080")
 
 rm(segmentation_mask)
 ```
@@ -674,6 +674,7 @@ probability_map = fslsmooth(probability_map,
 threshold = mimosa_training$estimated_optimal_threshold
 segmentation_mask = probability_map > threshold
 
+gold_standard = readnii(gold_standard)
 # Generate summary measures for performance
 count_stats(gold_standard = gold_standard, 
             predicted_segmentation = segmentation_mask, 

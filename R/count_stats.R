@@ -11,7 +11,7 @@
 #' @importFrom neurobase niftiarr
 #' @return Matrix of results
 
-count_stats <- function(gold_standard, predicted_segmentation, k, percent_overlap = NULL, verbose = TRUE){
+count_stats <- function(gold_standard, predicted_segmentation, k = Inf, percent_overlap = NULL, verbose = TRUE){
 
   #Initialize results matrix
   stats_mat = matrix(NA, nrow = 1, ncol = 5)
@@ -21,6 +21,8 @@ count_stats <- function(gold_standard, predicted_segmentation, k, percent_overla
   #####################
   # Obtain Count Mask Images
   #####################
+  gold_standard = check_nifti(gold_standard)
+  predicted_segmentation = check_nifti(predicted_segmentation)
 
   message("# Counting Masks")
 
