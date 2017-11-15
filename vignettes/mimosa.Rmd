@@ -32,12 +32,9 @@ When going through this tutorial be sure your package is up to date. You will al
 ```{r, warning = FALSE, message = FALSE}
 library(neurobase)
 library(mimosa)
-# library(data.table)
 library(dplyr)
 library(oasis)
 library(fslr)
-# library(scales)
-# library(tidyverse)
 ```
 
 ## Tutorial Data
@@ -59,8 +56,6 @@ If you have your own data you can adapt code provided here and apply the methods
 
 Before loading the data into R let's first organize the image file paths into a `matrix`.
 
-
-
 ```{r, echo = FALSE}
 info = Sys.info()
 user = info[["user"]]
@@ -74,9 +69,12 @@ if (grepl("muschel", user )) {
   test_data_dir = file.path(data_dir, "testdata_website")
 }
 train_dir = file.path(data_dir, "training01")
-eval = FALSE # don't run
-eval = file.exists(train_dir) && eval
-knitr::opts_chunk$set(eval = eval)
+
+## Ignore
+## Vignette global options to not run chunks
+# eval = FALSE # don't run
+# eval = file.exists(train_dir) && eval
+# knitr::opts_chunk$set(eval = eval)
 ```
 
 
@@ -130,7 +128,7 @@ For this example, data are preprocessed for us. That is, they have been inhomoge
 
 Once data are preprocessed we can create a `data.frame` of predictors using the `mimosa_data` function which creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes. The user only needs FLAIR and T1 sequences but performance may suffer qualitatively. When training the model binary lesion masks are also required. The function returns a tissue mask, the candidate voxels mask for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method. 
 
-```{r, warning = FALSE, eval = FALSE}
+```{r, warning = FALSE}
 # The R package neurobase is needed for the readnii function
 T1_training01_01 = readnii(filepaths$T1[1])
 T2_training01_01 = readnii(filepaths$T2[1])
@@ -588,8 +586,7 @@ Let's show an example of applying `count_stats`. For this let's use the training
 
 For this, let's only use the training01 subject data and only the first time point.
 
-```{r, eval = FALSE}
-# Set eval = TRUE on cluster
+```{r}
 train2_dir = file.path(train_data_dir, "training02")
 
 # Read in images
@@ -633,7 +630,6 @@ T2 = filepaths$T2[1]
 FLAIR = filepaths$FLAIR[1]
 PD = filepaths$PD[1]
 gold_standard = filepaths$GS[1]
-
 
 # Create a brain mask
 brain_mask = create_brain_mask(
