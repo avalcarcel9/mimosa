@@ -13,6 +13,8 @@ vignette: >
 
 The mimosa package trains and makes predictions from the MIMoSA method. Access to the full paper can be found [here](http://www.biorxiv.org/content/early/2017/06/15/150284). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
 
+Due to constraints with Neuroconductor code and output could not be compiled together. If you would like to follow a vignette with code and relevant output please use the version available on my [github](https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa.Rmd).
+
 ## Installation
 
 To install the package from neuroconductor, type:
@@ -72,9 +74,9 @@ train_dir = file.path(data_dir, "training01")
 
 ## Ignore
 ## Vignette global options to not run chunks
-# eval = FALSE # don't run
-# eval = file.exists(train_dir) && eval
-# knitr::opts_chunk$set(eval = eval)
+eval = FALSE # don't run
+eval = file.exists(train_dir) && eval
+knitr::opts_chunk$set(eval = eval)
 ```
 
 

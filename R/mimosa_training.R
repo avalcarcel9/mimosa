@@ -13,7 +13,7 @@
 #' you provide the tissue mask as the brain_mask object
 #' @param gold_standard vector of full path to Gold standard segmentations.
 #' Typically manually segemented images.
-#' @param normalize TRUE normalizes image inputs using z-score normalization
+#' @param normalize is NULL by default and will not perform any normalization on data. To normalize data specifcy Z for z-score normalization or WS for WhiteStripe normalization
 #' @param slices vector of desired slices to train on, if NULL then train
 #' over the entire brain mask
 #' @param orientation string value telling which orientation the training
@@ -39,7 +39,7 @@
 #### #' @importFrom data.table rbindlist
 
 mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-                            gold_standard, normalize = TRUE, slices = NULL,
+                            gold_standard, normalize = FALSE, slices = NULL,
                             orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE, outdir = NULL,
                             optimal_threshold = NULL){
 
@@ -162,7 +162,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
         writenii(train_data_i$coupling_slopes[[j]], filename = paste0(outdir[i], '_coupling_', names(train_data_i$coupling_slopes)[j]))
       }
       ## Return normalized and/or tissue depending on inputs
-      if(normalize == TRUE & tissue == TRUE){
+      if(normalize != FALSE & tissue == TRUE){
         # If normalize is true then we normalize the images provided, if tissue is true we treat the brain mask as
         ##the tissue mask in this case return the normalized images but they have the tissue mask so do not return
         # Normalized images
@@ -175,7 +175,7 @@ mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue 
         ## Return tissue
         writenii(train_data_i$tissue_mask, filename = paste0(outdir[i], '_tissue_mask'))
       }
-      if(normalize == TRUE & tissue == FALSE){
+      if(normalize != FALSE & tissue == FALSE){
         # If normalize is true then images are normalized, if tissue is false then we find the tissue mask
         ## return both
         # Normalized images

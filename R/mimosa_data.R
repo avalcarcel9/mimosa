@@ -8,7 +8,7 @@
 #' @param PD volume of class nifti. If not available use NULL.
 #' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
 #' @param gold_standard gold standard lesion segmentation mask of class nifti
-#' @param normalize is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images
+#' @param normalize is NULL by default and will not perform any normalization on data. To normalize data specifcy Z for z-score normalization or WS for WhiteStripe normalization
 #' @param cand_mask is NULL to use candidate mask procedure proposed with method or a nifti object to be used as the candidate mask
 #' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
 #' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
@@ -21,13 +21,14 @@
 #' @importFrom oasis voxel_selection correct_image_dim
 #' @importFrom stats cov.wt qnorm
 #' @importFrom utils combn
+#' @importFrom WhiteStripe whitestripe whitestripe_norm
 #' @return List of objects
 #' @examples \dontrun{
 #'
 #'}
 
 mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-                                    gold_standard = NULL, normalize = TRUE, cand_mask = NULL, slices = NULL,
+                                    gold_standard = NULL, normalize = FALSE, cand_mask = NULL, slices = NULL,
                                     orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE) {
   if (verbose) {
     message("# Checking File inputs")
@@ -86,8 +87,8 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
   nulls = sapply(mimosa_data, is.null)
   mimosa_data = mimosa_data[!nulls]
 
-  # Normalize by z-score approach if normalize = TRUE
-  if (normalize == TRUE) {
+  # Normalize by z-score approach if normalize = "Z"
+  if (normalize == 'Z') {
     if (verbose) {
       message("# Normalizing Images using Z-score")
     }
@@ -97,6 +98,30 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     normalized = mimosa_data
     nulls = sapply(normalized, is.null)
     normalized = normalized[!nulls]
+  } 
+  if (normalize == 'WS'){
+    if (verbose) {
+      message("# Normalizing Images using WhiteStripe")
+    }
+    # Run WhiteStripe on T1 and FLAIR
+    WS_T1 = whitestripe(mimosa_data$T1, type="T1", stripped = TRUE, verbose = verbose)
+    WS_T2 = whitestripe(mimosa_data$FLAIR, type="T2", stripped = TRUE, verose = verbose)
+    
+    mimosa_data$T1 = whitestripe_norm(mimosa_data$T1, WS_T1$whitestripe.ind)
+    mimosa_data$FLAIR = whitestripe_norm(mimosa_data$FLAIR, WS_T2$whitestripe.ind)
+    if(is.null(T2)==FALSE & is.null(PD)==TRUE){
+      # Images include T1, FLAIR, T2
+      mimosa_data$T2 = whitestripe_norm(mimosa_data$T2, WS_T2$whitestripe.ind)
+    }
+    if(is.null(T2)==TRUE & is.null(PD)==FALSE){
+      # Images include T1, FLAIR, PD
+      mimosa_data$PD = whitestripe_norm(mimosa_data$PD, WS_T2$whitestripe.ind)
+    }
+    if(is.null(T2)==FALSE & is.null(PD)==FALSE){
+      # Images include T1, FLAIR, T2, PD
+      mimosa_data$T2 = whitestripe_norm(mimosa_data$T2, WS_T2$whitestripe.ind)
+      mimosa_data$PD = whitestripe_norm(mimosa_data$PD, WS_T2$whitestripe.ind)
+    }
   }
   
   # Obtain candidate voxels and create candidate mask
@@ -208,8 +233,8 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes))
   }
 
-  if(normalize == TRUE & tissue == TRUE){
-    # If normalize is true then we normalize the images provided, if tissue is true we treat the brain mask as
+  if(normalize != FALSE & tissue == TRUE){
+    # If normalize a value then we normalize the images provided, if tissue is true we treat the brain mask as
     ## The tissue mask in this case return the normalized images but they have the tissue mask so do not return
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
@@ -222,7 +247,7 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
                 tissue_mask = tissue_mask))
     }
-  if(normalize == TRUE & tissue == FALSE){
+  if(normalize != FALSE & tissue == FALSE){
     # If normalize is true then images are normalized, if tissue is false then we find the tissue mask
     ## Return both
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
