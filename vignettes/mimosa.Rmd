@@ -118,7 +118,7 @@ filepaths
 
 ### Preprocessing
 
-The `mimosa` package does not provide a preprocessing pipeline function. For the preprocessing pipeline used in the original methods please see our [paper](http://www.biorxiv.org/content/early/2017/06/15/150284). Before implementing the method, data should be inhomogeneity corrected, registered, skull stripped, and normalized to obtain accurate predicted lesion segmentations. The training functions in this package do allow for z-score normalization of the method. 
+The `mimosa` package does not provide a preprocessing pipeline function. For the preprocessing pipeline used in the original methods please see our [paper](http://www.biorxiv.org/content/early/2017/06/15/150284). Before implementing the method, data should be inhomogeneity corrected, registered, skull stripped, and normalized to obtain accurate predicted lesion segmentations. The training functions in this package allow for z-score normalization, WhiteStripe normalization, or no normalization method for data that have been previousl normalized. 
 
 Some preprocessing tips:
 
@@ -155,7 +155,7 @@ multi_overlay(sequence,
 rm(sequence)
 ```
 
-Let's first create a brain mask by taking the union of positive voxels in the T1, T2, PD, and FLAIR. We use the union in order to include all voxels across all images with brain matter. The difference in these is typically only near the skull and will not be important after the selection of candidate voxels. We can then create the training `data.frame` for the sequence loaded in memory. The preprocessing carried out previously did not normalize the data therefore we will set `normalize = TRUE`. We are supplying the brain mask rather than a tissue mask so we set `tissue = FALSE`. If you supply the tissue mask as the `brain_mask` you can set `tissue = TRUE`.
+Let's first create a brain mask by taking the union of positive voxels in the T1, T2, PD, and FLAIR. We use the union in order to include all voxels across all images with brain matter. The difference in these is typically only near the skull and will not be important after the selection of candidate voxels. We can then create the training `data.frame` for the sequence loaded in memory. The preprocessing carried out previously did not normalize the data therefore we will set `normalize = 'Z'`. We are supplying the brain mask rather than a tissue mask so we set `tissue = FALSE`. If you supply the tissue mask as the `brain_mask` you can set `tissue = TRUE`.
 
 ```{r}
 create_brain_mask = function(...) {
@@ -188,7 +188,7 @@ mimosa_data = mimosa_data(
   PD = PD_training01_01, 
   tissue = FALSE, 
   gold_standard = gold_standard, 
-  normalize = TRUE, 
+  normalize = 'Z', 
   cand_mask = NULL, 
   slices = NULL, 
   orientation = c("axial", "coronal", "sagittal"), 
@@ -219,7 +219,7 @@ The following items are always returned from the `mimosa_data` function:
 
 The following may be returned depending on input arguments:
 
-- `normalized` is an embedded list of normalized volumes. Returned when `normalize = TRUE`. Each object in this list is a `nifti`.
+- `normalized` is an embedded list of normalized volumes. Returned when `normalize != FALSE`. Each object in this list is a `nifti`.
 - `tissue_mask` is a brain mask that excludes CSF. Returned when `tissue = FALSE`. Each object in this list is a `nifti`.
 
 Next, I show the first 5 rows of the `$mimosa_dataframe` and a few of the nifti objects displayed using `ortho2`. You can always save these objects using `writenii` and use a viewer of your choosing. 
@@ -290,7 +290,7 @@ mimosa_training = mimosa_training(
   PD = filepaths$PD,
   tissue = FALSE, 
   gold_standard = filepaths$GS,
-  normalize = TRUE, 
+  normalize = 'Z', 
   slices = NULL, 
   orientation = c("axial", "coronal", "sagittal"),
   cores = 1, 
@@ -350,7 +350,7 @@ for (i in seq(nrow(filepaths))) {
     PD = PD_training, 
     tissue = FALSE, 
     gold_standard = gold_standard, 
-    normalize = TRUE, 
+    normalize = 'Z', 
     cand_mask = NULL, 
     slices = NULL, 
     orientation = c("axial", "coronal", "sagittal"), 
@@ -501,7 +501,7 @@ mimosa_testdata = mimosa_data(
   PD = PD_training, 
   tissue = FALSE, 
   gold_standard = gold_standard, 
-  normalize = TRUE, 
+  normalize = 'Z', 
   cand_mask = NULL, 
   slices = NULL, 
   orientation = c("axial", "coronal", "sagittal"), 
@@ -650,7 +650,7 @@ training02_01_data = mimosa_data(
   PD = PD, 
   tissue = FALSE, 
   gold_standard = gold_standard, 
-  normalize = TRUE, 
+  normalize = 'Z', 
   cand_mask = NULL, 
   slices = NULL, 
   orientation = c("axial", "coronal", "sagittal"), 
