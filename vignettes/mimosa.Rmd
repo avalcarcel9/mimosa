@@ -219,7 +219,7 @@ The following items are always returned from the `mimosa_data` function:
 
 The following may be returned depending on input arguments:
 
-- `normalized` is an embedded list of normalized volumes. Returned when `normalize != FALSE`. Each object in this list is a `nifti`.
+- `normalized` is an embedded list of normalized volumes. Returned when `normalize != 'no'`. Each object in this list is a `nifti`.
 - `tissue_mask` is a brain mask that excludes CSF. Returned when `tissue = FALSE`. Each object in this list is a `nifti`.
 
 Next, I show the first 5 rows of the `$mimosa_dataframe` and a few of the nifti objects displayed using `ortho2`. You can always save these objects using `writenii` and use a viewer of your choosing. 

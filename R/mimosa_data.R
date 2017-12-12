@@ -8,7 +8,7 @@
 #' @param PD volume of class nifti. If not available use NULL.
 #' @param tissue is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be FALSE unless you provide the tissue mask as the brain_mask object
 #' @param gold_standard gold standard lesion segmentation mask of class nifti
-#' @param normalize is NULL by default and will not perform any normalization on data. To normalize data specifcy Z for z-score normalization or WS for WhiteStripe normalization
+#' @param normalize is 'no' by default and will not perform any normalization on data. To normalize data specify 'Z' for z-score normalization or 'WS' for WhiteStripe normalization
 #' @param cand_mask is NULL to use candidate mask procedure proposed with method or a nifti object to be used as the candidate mask
 #' @param slices vector of desired slices to train on, if NULL then train over the entire brain mask
 #' @param orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
@@ -28,7 +28,7 @@
 #'}
 
 mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-                                    gold_standard = NULL, normalize = FALSE, cand_mask = NULL, slices = NULL,
+                                    gold_standard = NULL, normalize = 'no', cand_mask = NULL, slices = NULL,
                                     orientation = c("axial", "coronal", "sagittal"), cores = 1, verbose = TRUE) {
   if (verbose) {
     message("# Checking File inputs")
@@ -226,28 +226,28 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
   }
 
   # Determine return object based on inputs
-  if(normalize == FALSE & tissue == TRUE){
+  if(normalize == 'no' & tissue == TRUE){
     # If normalize = FALSE we do not normalize, if tissue = true we treat the brain mask as the tissue_mask
     ## In this case do not return normalized images or the tissue mask as user already has them
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes))
   }
 
-  if(normalize != FALSE & tissue == TRUE){
+  if(normalize != 'no' & tissue == TRUE){
     # If normalize a value then we normalize the images provided, if tissue is true we treat the brain mask as
     ## The tissue mask in this case return the normalized images but they have the tissue mask so do not return
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
                 normalized = normalized))
   }
-  if(normalize == FALSE & tissue == FALSE){
+  if(normalize == 'no' & tissue == FALSE){
     # If normalize is FALSE then we normalize images if tissue is false we find the tissue mask
     ## Return only tissue
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,
                 coupling_intercepts = coupling_intercepts, coupling_slopes = coupling_slopes,
                 tissue_mask = tissue_mask))
     }
-  if(normalize != FALSE & tissue == FALSE){
+  if(normalize != 'no' & tissue == FALSE){
     # If normalize is true then images are normalized, if tissue is false then we find the tissue mask
     ## Return both
     return(list(mimosa_dataframe = mimosa_dataframe, top_voxels = top_voxels, smoothed = smoothed,

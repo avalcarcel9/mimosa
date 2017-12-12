@@ -3,7 +3,7 @@
 mimosa
 ======
 
-`mimosa` is an R package based on the paper: [MIMoSA: A Method for Inter-Modal Segmentation Analysis by Valcarcel et al](https://www.biorxiv.org/content/biorxiv/early/2017/06/15/150284.full.pdf). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
+`mimosa` is an R package based on the paper: [MIMoSA: A Method for Inter-Modal Segmentation Analysis by Valcarcel et al.](https://www.biorxiv.org/content/biorxiv/early/2017/06/15/150284.full.pdf). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
 
 Installation
 ------------
@@ -79,7 +79,7 @@ mimosa_data(brain_mask,
             PD = NULL, 
             tissue = FALSE, 
             gold_standard = NULL, 
-            normalize = TRUE, 
+            normalize = 'no', 
             cand_mask = NULL, 
             slices = NULL, 
             orientation = c("axial", "coronal", "sagittal"), 
@@ -96,7 +96,8 @@ mimosa_data(brain_mask,
 -   `PD` volume of class `nifti`. If not available use `NULL`.
 -   `tissue` is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be `FALSE` unless you provide the tissue mask as the brain\_mask object
 -   `gold_standard` gold standard lesion segmentation mask of class `nifti`
--   `normalize` is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be `TRUE` unless you train model using an alternative normalization or provide normalized images
+-   -   `normalize` by default is 'no' will not normalize images. To normalize images use inputs 'Z' for z-score normalization slices vector of desired slices to train on, for WhiteStripe use 'WS'
+
 -   `cand_mask` is `NULL` to use candidate mask procedure proposed with method or a `nifti` object to be used as the candidate mask
 -   `slices` vector of desired slices to train on, if `NULL` then train over the entire brain mask
 -   `orientation` string value telling which orientation the training slices are specified in, can take the values of "axial","coronal", and "sagittal",
@@ -115,7 +116,7 @@ mimosa_training(brain_mask,
                 PD = NULL, 
                 tissue = FALSE, 
                 gold_standard, 
-                normalize = TRUE, 
+                normalize = 'no', 
                 slices = NULL, 
                 orientation = c("axial", "coronal", "sagittal"), 
                 cores = 1, 
@@ -133,7 +134,8 @@ mimosa_training(brain_mask,
 -   `PD` `vector` of full path to PD if available. If not use `NULL`.
 -   `tissue` is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be `FALSE` unless you provide the tissue mask as the `brain_mask` object
 -   `gold_standard` vector of full path to gold standard segmentations. Typically manually segmented images.
--   `normalize` `TRUE` normalizes image inputs using z-score normalization slices vector of desired slices to train on, if `NULL` then train over the entire brain mask orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
+-   `normalize` by default is 'no' will not normalize images. To normalize images use inputs 'Z' for z-score normalization slices vector of desired slices to train on, for WhiteStripe use 'WS'
+-   `orientation` if `NULL` then train over the entire brain mask orientation string value telling which orientation the training slices are specified in, can take the values of "axial", "sagittal", or "coronal"
 -   `cores` numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)
 -   `verbose` logical indicating printing diagnostic output
 -   `outdir` vector of paths/IDs to be pasted to objects that will be saved. `NULL` if objects are not to be saved

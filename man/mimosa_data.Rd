@@ -5,7 +5,7 @@
 \title{MIMoSA Training Data Frame}
 \usage{
 mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-  gold_standard = NULL, normalize = TRUE, cand_mask = NULL,
+  gold_standard = NULL, normalize = "no", cand_mask = NULL,
   slices = NULL, orientation = c("axial", "coronal", "sagittal"),
   cores = 1, verbose = TRUE)
 }
@@ -24,7 +24,7 @@ mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
 
 \item{gold_standard}{gold standard lesion segmentation mask of class nifti}
 
-\item{normalize}{is a logical value that determines whether to perform z-score normalization of the image over the brain mask, should be TRUE unless you train model using an alternative normalization or provide normalized images}
+\item{normalize}{is 'no' by default and will not perform any normalization on data. To normalize data specify 'Z' for z-score normalization or 'WS' for WhiteStripe normalization}
 
 \item{cand_mask}{is NULL to use candidate mask procedure proposed with method or a nifti object to be used as the candidate mask}
 

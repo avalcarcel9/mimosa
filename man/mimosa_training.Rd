@@ -5,7 +5,7 @@
 \title{Train MIMoSA model on full training set}
 \usage{
 mimosa_training(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL,
-  tissue = FALSE, gold_standard, normalize = TRUE, slices = NULL,
+  tissue = FALSE, gold_standard, normalize = "no", slices = NULL,
   orientation = c("axial", "coronal", "sagittal"), cores = 1,
   verbose = TRUE, outdir = NULL, optimal_threshold = NULL)
 }
@@ -27,7 +27,7 @@ you provide the tissue mask as the brain_mask object}
 \item{gold_standard}{vector of full path to Gold standard segmentations.
 Typically manually segemented images.}
 
-\item{normalize}{TRUE normalizes image inputs using z-score normalization}
+\item{normalize}{is 'no' by default and will not perform any normalization on data. To normalize data specifcy 'Z' for z-score normalization or 'WS' for WhiteStripe normalization}
 
 \item{slices}{vector of desired slices to train on, if NULL then train
 over the entire brain mask}
