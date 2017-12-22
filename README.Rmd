@@ -41,7 +41,7 @@ muschellij2 badges:
 
 ## Vignette
 
-For a full implementation of the methods please see our [vignette](https://github.com/avalcarcel9/mimosa/tree/master/vignettes).
+For a full implementation of the methods with output please see our [vignette](https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa_git.md).
 
 ## Functions
 
