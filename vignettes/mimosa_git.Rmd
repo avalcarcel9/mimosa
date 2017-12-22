@@ -2,7 +2,7 @@
 title: "MIMoSA: A Method for Inter-Modal Segmentation Analysis"
 author: "Alessandra Valcarcel"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: rmarkdown::github_document
 vignette: >
   %\VignetteIndexEntry{mimosa}
   %\VignetteEngine{knitr::rmarkdown}
