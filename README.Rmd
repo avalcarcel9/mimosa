@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # mimosa
-<img src="https://github.com/avalcarcel9/mimosa/blob/master/sticker.png" height="48">
+<img src="https://github.com/avalcarcel9/mimosa/blob/master/sticker.png" height="24">
 
 ![](sticker.png)
 
