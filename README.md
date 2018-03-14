@@ -3,6 +3,9 @@
 mimosa
 ======
 
+<center>
+![](sticker.png)
+</center>
 `mimosa` is an R package based on the paper: [MIMoSA: A Method for Inter-Modal Segmentation Analysis by Valcarcel et al.](https://www.biorxiv.org/content/biorxiv/early/2017/06/15/150284.full.pdf). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
 
 Installation
@@ -96,8 +99,7 @@ mimosa_data(brain_mask,
 -   `PD` volume of class `nifti`. If not available use `NULL`.
 -   `tissue` is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be `FALSE` unless you provide the tissue mask as the brain\_mask object
 -   `gold_standard` gold standard lesion segmentation mask of class `nifti`
--   -   `normalize` by default is 'no' will not normalize images. To normalize images use inputs 'Z' for z-score normalization slices vector of desired slices to train on, for WhiteStripe use 'WS'
-
+-   `normalize` by default is 'no' will not normalize images. To normalize images use inputs 'Z' for z-score normalization slices vector of desired slices to train on, for WhiteStripe use 'WS'
 -   `cand_mask` is `NULL` to use candidate mask procedure proposed with method or a `nifti` object to be used as the candidate mask
 -   `slices` vector of desired slices to train on, if `NULL` then train over the entire brain mask
 -   `orientation` string value telling which orientation the training slices are specified in, can take the values of "axial","coronal", and "sagittal",
