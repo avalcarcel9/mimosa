@@ -5,7 +5,7 @@ mimosa
 
 ![](sticker.png)
 
-`mimosa` is an R package based on the paper: [MIMoSA: An Automated Method for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions by Valcarcel et al.](http://onlinelibrary.wiley.com/doi/10.1111/jon.12506/full). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
+`mimosa` is an R package based on the paper: [MIMoSA: An Automated Method for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions](http://onlinelibrary.wiley.com/doi/10.1111/jon.12506/full) by Valcarcel et al. published in the [Journal of Neuroimaging](http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1552-6569). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
 
 Installation
 ------------
