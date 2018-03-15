@@ -3,7 +3,7 @@
 mimosa
 ======
 
-<a href="https://bookdown.org/yihui/blogdown"><img src="https://bookdown.org/yihui/blogdown/images/logo.png" alt="blogdown logo" align="right" /></a>
+<a href="https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa_git.md"><img src="https://github.com/avalcarcel9/mimosa/blob/master/sticker.png" alt="mimosa logo" align="right" /></a>
 
 <img src="https://github.com/avalcarcel9/mimosa/blob/master/sticker.png" height="192">
 
