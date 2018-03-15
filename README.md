@@ -3,6 +3,8 @@
 mimosa
 ======
 
+<a href="https://bookdown.org/yihui/blogdown"><img src="https://bookdown.org/yihui/blogdown/images/logo.png" alt="blogdown logo" align="right" /></a>
+
 <img src="https://github.com/avalcarcel9/mimosa/blob/master/sticker.png" height="192">
 
 `mimosa` is an R package based on the paper: [MIMoSA: An Automated Method for Intermodal Segmentation Analysis of Multiple Sclerosis Brain Lesions](http://onlinelibrary.wiley.com/doi/10.1111/jon.12506/full) by Valcarcel et al. published in the [Journal of Neuroimaging](http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1552-6569). This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.
