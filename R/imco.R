@@ -15,9 +15,6 @@
 #' @importFrom extrantsr check_ants
 #' @importFrom stats qnorm
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
-#' @examples \dontrun{
-#'
-#'}
 imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhoodSize=3, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
     if(!(type=="pca" | type=="regression")){
         stop('type must be either pca or regression')

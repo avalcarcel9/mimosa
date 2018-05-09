@@ -6,6 +6,7 @@
 #' @return A \code{formula} object 
 #' @export
 #'
+#' @importFrom stats as.formula
 #' @examples
 #' mimosa_formula()
 #' mimosa_formula(T2 = FALSE)
