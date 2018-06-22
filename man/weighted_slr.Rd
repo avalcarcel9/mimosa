@@ -4,12 +4,12 @@
 \alias{weighted_slr}
 \title{Weighted simple linear regression}
 \usage{
-weighted_slr(x, y, wts, mInds = NULL, refImg = NULL)
+weighted_slr(x, y, wts, mInds, refImg)
 }
 \arguments{
-\item{x}{dependent modality matrix of nhood values (primary)}
+\item{x}{independent modality matrix of nhood values (primary)}
 
-\item{y}{independent modality matrix of nhood values (primary)}
+\item{y}{dependent modality matrix of nhood values (primary)}
 
 \item{wts}{vector of kernel weights}
 
@@ -21,7 +21,7 @@ weighted_slr(x, y, wts, mInds = NULL, refImg = NULL)
 L list including intercept and slope from both weighted SLRs
 }
 \description{
-Returns parameters from weighted regression of x on y (primary) and y on x (secondary)
+Returns parameters from weighted regression of y on x (primary) and x on y (secondary, "reverse")
 }
 \examples{
 \dontrun{

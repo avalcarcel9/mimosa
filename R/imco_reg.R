@@ -10,18 +10,24 @@
 #' @param verbose TRUE for updates on computation, else FALSE
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
+#' @param propMiss Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel
+#' @export
+#' @import ANTsR 
 #' @importFrom extrantsr ants2oro
 #' @importFrom rlist list.rbind
 #' @importFrom stats coef cov.wt lm.wfit
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
 #' @examples \dontrun{
-#'
+#' 
 #'}
-imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
+imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=FALSE, verbose=TRUE, retimg=FALSE, outDir=NULL, propMiss=NULL){
 	if(verbose){
 		cat("# Computing weighted regressions \n")
 	}
 	if(length(files)==2 & reverse){
+        if(!is.null(propMiss)){
+            stop("propMiss can only be used when reverse=FALSE")
+        }
 		if(ref==1){
  			x = nhoods[[2]]$values
  			y = nhoods[[1]]$values
@@ -53,8 +59,13 @@ imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, ver
  			w=nWts
  			xRows = apply(as.matrix(x), 1, function(z){!any(is.na(z))})
  			if(sum(xRows) > 2){
- 				return(cbind(w[xRows], as.matrix(x)[xRows,]))
- 			}
+                # If the proportion of missing voxels is greater than propMiss, return NA
+                if(mean(!xRows) > propMiss){
+                   return(NA)
+                } else{
+                    return(cbind(w[xRows], as.matrix(x)[xRows,]))
+                }
+ 			} 
  			return(NA)
  		})
  		wregList = lapply(rmnaList, function(x){
@@ -62,7 +73,7 @@ imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, ver
  				w=x[,1]
  				newx=x[,-1]
  				return(lm.wfit(x=as.matrix(cbind(1, newx[,-ref])),y=newx[,ref], w=w))
- 			}
+ 			} 
  			return(NA)
  		})
  		getR2 = lapply(wregList, function(x){
@@ -75,7 +86,7 @@ imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, ver
  				rss = sum(w * (r^2))
  				r2 = mss/(mss + rss)
  				return(r2)
- 			}
+ 			} 
  			return(NA)
  		})
  		rsquared = make_ants_image(vec=as.vector(list.rbind(getR2)), mask_indices=mask_indices, reference=files[[1]])
@@ -84,14 +95,14 @@ imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=TRUE, ver
  		}
  		coefs = list()
  		for(j in 1:length(files)){
- 			tmp = as.vector(list.rbind(lapply(wregList,
+ 			tmp = as.vector(list.rbind(lapply(wregList, 
  				function(x){
  					if(!is.na(x)[1]) return(coef(x)[j]) else return(NA)
  				})
  			))
  			coefs[[j]] = make_ants_image(vec=tmp, mask_indices=mask_indices, reference=files[[1]])
  			if(!is.null(outDir)){
- 				antsImageWrite(coefs[[j]], file.path(outDir, paste0('beta', j-1, '.nii.gz')))
+ 				antsImageWrite(coefs[[j]], file.path(outDir, paste0('beta', j-1, '.nii.gz')))      
  			}
  		}
  		if(retimg){
