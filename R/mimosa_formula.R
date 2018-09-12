@@ -28,7 +28,7 @@ mimosa_formula = function(T2 = TRUE, PD = TRUE) {
   formula = as.character(formula)
   yvar = formula[2]
   formula = formula[3]
-  run_terms =strsplit(formula, split = "+", fixed = TRUE)[[1]]
+  run_terms = strsplit(formula, split = "+", fixed = TRUE)[[1]]
   run_terms = trimws(run_terms)
   if (!T2) {
     run_terms = run_terms[ !grepl("T2", run_terms)]
@@ -39,4 +39,5 @@ mimosa_formula = function(T2 = TRUE, PD = TRUE) {
   run_terms = paste(run_terms, collapse = " + ")
   formula = paste0(yvar, " ~ ", run_terms)
   formula = as.formula(formula)
+  return(formula)
 }

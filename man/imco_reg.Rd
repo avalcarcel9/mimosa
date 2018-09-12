@@ -4,8 +4,8 @@
 \alias{imco_reg}
 \title{Regression Inter-modal Coupling Model}
 \usage{
-imco_reg(files, nhoods, nWts, mask_indices, ref = 1, reverse = TRUE,
-  verbose = TRUE, retimg = FALSE, outDir = NULL)
+imco_reg(files, nhoods, nWts, mask_indices, ref = 1, reverse = FALSE,
+  verbose = TRUE, retimg = FALSE, outDir = NULL, propMiss = NULL)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}
@@ -25,6 +25,8 @@ imco_reg(files, nhoods, nWts, mask_indices, ref = 1, reverse = TRUE,
 \item{retimg}{If TRUE, return list of estimated coupling maps as nifti objects}
 
 \item{outDir}{Full path to directory where maps should be written}
+
+\item{propMiss}{Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel}
 }
 \value{
 Estimated IMCo coupling maps, either written to files and/or returned as nifti objects

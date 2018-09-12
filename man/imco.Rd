@@ -5,8 +5,8 @@
 \title{Inter-modal Coupling Model}
 \usage{
 imco(files, brainMask, subMask = NULL, type = "pca", ref = 1,
-  neighborhoodSize = 3, reverse = TRUE, verbose = TRUE, retimg = FALSE,
-  outDir = NULL)
+  fwhm = 3, thresh = 0.005, radius = NULL, reverse = FALSE,
+  verbose = TRUE, retimg = FALSE, outDir = NULL, propMiss = NULL)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}
@@ -19,7 +19,11 @@ imco(files, brainMask, subMask = NULL, type = "pca", ref = 1,
 
 \item{ref}{reference modality when type="pca" or dependent modality when type="regression"}
 
-\item{neighborhoodSize}{Full width in voxels for FWHM}
+\item{fwhm}{Full width in voxels for FWHM}
+
+\item{thresh}{Threshold for trimming Gaussian kernel weights}
+
+\item{radius}{radius of neighborhood in number of voxels. Can be specified instead of fwhm. Default is NULL and overrides fwhm when specified as non-NULL.}
 
 \item{reverse}{If TRUE, calculates both regressions if type="regression" and length(files)==2, otherwise ignored}
 
@@ -28,6 +32,8 @@ imco(files, brainMask, subMask = NULL, type = "pca", ref = 1,
 \item{retimg}{If TRUE, return list of estimated coupling maps as nifti objects}
 
 \item{outDir}{Full path to directory where maps should be written}
+
+\item{propMiss}{Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel}
 }
 \value{
 Estimated IMCo coupling maps, either written to files and/or returned as nifti objects

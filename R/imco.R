@@ -6,24 +6,27 @@
 #' @param subMask NULL or local nifti object or the full path to a mask that is a subset of brain mask where coupling should be computed
 #' @param type "regression" or "pca"
 #' @param ref reference modality when type="pca" or dependent modality when type="regression"
-#' @param neighborhoodSize Full width in voxels for FWHM
+#' @param fwhm Full width in voxels for FWHM
+#' @param thresh Threshold for trimming Gaussian kernel weights
+#' @param radius radius of neighborhood in number of voxels. Can be specified instead of fwhm. Default is NULL and overrides fwhm when specified as non-NULL. 
 #' @param reverse If TRUE, calculates both regressions if type="regression" and length(files)==2, otherwise ignored
 #' @param verbose TRUE for updates on computation, else FALSE
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
-#' @importFrom ANTsRCore antsGetSpacing getNeighborhoodInMask
-#' @importFrom extrantsr check_ants
+#' @param propMiss Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel
+#' @export
+#' @import ANTsR 
+#' @importFrom extrantsr check_ants 
 #' @importFrom stats qnorm
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
-imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhoodSize=3, reverse=TRUE, verbose=TRUE, retimg=FALSE, outDir=NULL){
+imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, fwhm=3, 
+                 thresh=0.005, radius=NULL, reverse=FALSE, 
+                 verbose=TRUE, retimg=FALSE, outDir=NULL, propMiss=NULL){
     if(!(type=="pca" | type=="regression")){
         stop('type must be either pca or regression')
     }
     if(!(is.numeric(ref) & ref<=length(files))){
         stop('check reference modality specification')
-    }
-    if(!(as.integer(neighborhoodSize)==neighborhoodSize)){
-        stop('neighborhoodSize must be an odd integer')
     }
     nf = length(files)
     fileList = check_ants(files)
@@ -39,6 +42,27 @@ imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhood
     vDims = antsGetSpacing(fileList[[1]])
     # Image dimension
     imgDims = dim(fileList[[1]])
+    if(is.null(radius)){
+    	if(fwhm <= 0){
+    		stop('fwhm must be positive')
+    	}
+    	if(fwhm > min(imgDims)){
+    		stop('fwhm too large')
+    	}
+    	if(!is.numeric(thresh) | thresh <= 0 | thresh >=1){
+    		stop('thresh must be between 0 and 1')
+    	} 
+    } else{
+    	if(radius < 1){
+    		stop('radius must be 1 or greater')
+    	}
+    	if(radius > min(imgDims)){
+    		stop('radius too large')
+    	}
+    	if(!is.numeric(thresh) | thresh <= 0 | thresh >=1){
+    		stop('thresh must be between 0 and 1')
+    	} 
+    }
     # Read in brain mask
     bMask = check_ants(brainMask)
     if(!all(dim(bMask)==dim(fileList[[1]]))){
@@ -50,25 +74,27 @@ imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhood
     # Assign anything outside brain mask to NA
     fileList = lapply(fileList, function(x){newx = x; newx[bMask==0] = NA; return(newx)})
     ######################################
-    # FWHM => sigma
-    # Note: We specify FWHM in terms of number of
+    # FWHM => sigma 
+    # Note: We specify FWHM in terms of number of 
     #       voxels along the axis of smallest size (mm).
     #       Thus, the neighborhood is specified in terms
     #       of a univariate Gaussian but the weights are
     #       computed from a trivariate Gaussian consisting
     #       of 3 independent univariate Gaussians.
     ######################################
-    minDim = min(vDims) #Should I use max or min to compute sigma?
-    if(neighborhoodSize%%2!=1){
-        stop('neighborhoodSize must be odd integer')
+    if(is.null(radius)){
+    	minDim = min(vDims) #Should I use max or min to compute sigma?
+    	width = fwhm*minDim
+        # Need sigma for specifying Guassian kernel 
+        # sigma is variance here
+    	sigma = width/(2*sqrt(2*log(2)))
+        # Backsolve for radius using kernel formula, assuming 3D vector with equal elements (e.g., c(2,2,2))
+    	radium = round(sqrt(-2*sigma*log(thresh)/3), 0)
+    	radius = rep(radium, 3)
+    } else{
+    	sigma = (radius^2)*(-3/2)/log(thresh)
+    	radius = rep(radius, 3)
     }
-    width = neighborhoodSize*minDim
-    # Need sigma for specifying Guassian kernel
-    sigma = width/(2*sqrt(2*log(2)))
-    # We will choose a radius based on quantile (mm) of univariate normal
-    lower = qnorm(.005, sd=sigma)
-    # Scale by voxel dimensions
-    radius = floor(abs(lower)/vDims)
     if(verbose){
     	cat("# Extracting neighborhood data \n")
     }
@@ -91,10 +117,10 @@ imco <- function(files, brainMask, subMask=NULL, type="pca", ref=1, neighborhood
     # Will use to compute distances from center voxel
     nWts = get_weights(offs, vDims, sigma=sigma)
     if(type=="regression"){
-    	regObj = imco_reg(files=files, nhoods=nhoods, nWts=nWts, mask_indices=mask_indices, ref=ref, reverse=reverse, verbose=verbose, retimg=retimg, outDir=outDir)
+    	regObj = imco_reg(files=fileList, nhoods=nhoods, nWts=nWts, mask_indices=mask_indices, ref=ref, reverse=reverse, verbose=verbose, retimg=retimg, outDir=outDir, propMiss=propMiss)
     	return(regObj)
     } else{
-    	pcaObj = imco_pca(files=files, nhoods=nhoods, nWts=nWts, mask_indices=mask_indices, ref=ref, verbose=verbose, retimg=retimg, outDir=outDir)
+    	pcaObj = imco_pca(files=fileList, nhoods=nhoods, nWts=nWts, mask_indices=mask_indices, ref=ref, verbose=verbose, retimg=retimg, outDir=outDir, propMiss=propMiss)
     	return(pcaObj)
     }
 }

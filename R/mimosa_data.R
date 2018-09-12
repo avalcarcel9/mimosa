@@ -182,8 +182,10 @@ mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = F
     temp_files = list(eval(parse(text = paste0('mimosa_data$', combos[1,i]))),
                       eval(parse(text = paste0('mimosa_data$', combos[2,i]))))
     
-    temp_return = imco(files=temp_files, brainMask=tissue_mask, subMask=top_voxels, type="regression",
-                       ref=1, neighborhoodSize=3, reverse=TRUE, verbose=verbose, retimg=TRUE, outDir=NULL)
+    temp_return = imco(files=temp_files, brainMask=tissue_mask, subMask=top_voxels,
+                       type="regression",
+                       ref=1, fwhm=3, reverse=TRUE, verbose=verbose, 
+                       retimg=TRUE, outDir=NULL)
 
     # Regressed Y on X and X on Y so create variable names to match: YonX_int, YonX_slope, XonY_int, XonY_slope
     list_names[i] = paste0(combos[1,i], 'on' , combos[2,i])
