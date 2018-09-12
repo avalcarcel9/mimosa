@@ -15,7 +15,7 @@
 #' @param outDir Full path to directory where maps should be written
 #' @param propMiss Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel
 #' @export
-#' @import ANTsR 
+#' @import ANTsRCore 
 #' @importFrom extrantsr check_ants 
 #' @importFrom stats qnorm
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects

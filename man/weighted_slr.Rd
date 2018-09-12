@@ -4,7 +4,7 @@
 \alias{weighted_slr}
 \title{Weighted simple linear regression}
 \usage{
-weighted_slr(x, y, wts, mInds, refImg)
+weighted_slr(x, y, wts, mInds, refImg = NULL)
 }
 \arguments{
 \item{x}{independent modality matrix of nhood values (primary)}
