@@ -4,10 +4,10 @@
 \alias{mimosa_data}
 \title{MIMoSA Training Data Frame}
 \usage{
-mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
-  gold_standard = NULL, normalize = "no", cand_mask = NULL,
-  slices = NULL, orientation = c("axial", "coronal", "sagittal"),
-  cores = 1, verbose = TRUE)
+mimosa_data(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL,
+  tissue = FALSE, gold_standard = NULL, normalize = "no",
+  cand_mask = NULL, slices = NULL, orientation = c("axial",
+  "coronal", "sagittal"), cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{brain_mask}{brain or tissue mask of class nifti}

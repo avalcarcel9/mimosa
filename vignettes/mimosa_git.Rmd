@@ -69,12 +69,6 @@ if (grepl("muschel", user )) {
   test_data_dir = file.path(data_dir, "testdata_website")
 }
 train_dir = file.path(data_dir, "training01")
-
-## Ignore
-## Vignette global options to not run chunks
-# eval = FALSE # don't run
-# eval = file.exists(train_dir) && eval
-# knitr::opts_chunk$set(eval = eval)
 ```
 
 
@@ -108,10 +102,19 @@ GS_files = list.files(path =
                                   "masks"), 
                       pattern = "mask2[.]nii", 
                       full.names = TRUE)
-filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, GS = GS_files, stringsAsFactors = FALSE)
-ss = strsplit(nii.stub(filepaths$T1), split = "_")
-filepaths$visit_id = sapply(ss, function(x) x[2])
-filepaths
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, 
+                       FLAIR = FLAIR_files, PD = PD_files, GS = GS_files,
+                       stringsAsFactors = FALSE)
+have_data = nrow(filepaths) > 0
+if (have_data) {
+  ss = strsplit(nii.stub(filepaths$T1), split = "_")
+  filepaths$visit_id = sapply(ss, function(x) x[2])
+  filepaths
+}
+```
+
+```{r, include=FALSE}
+knitr::opts_chunk(eval = have_data)
 ```
 
 ### Preprocessing
@@ -192,6 +195,7 @@ mimosa_data = mimosa_data(
   orientation = c("axial", "coronal", "sagittal"), 
   cores = 1, 
   verbose = TRUE)
+
 ```
 
 A note on the returned objects:

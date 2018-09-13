@@ -4,9 +4,9 @@
 \alias{imco}
 \title{Inter-modal Coupling Model}
 \usage{
-imco(files, brainMask, subMask = NULL, type = "pca", ref = 1, fwhm = 3,
-  thresh = 0.005, radius = NULL, reverse = FALSE, verbose = TRUE,
-  retimg = FALSE, outDir = NULL, propMiss = NULL)
+imco(files, brainMask, subMask = NULL, type = "pca", ref = 1,
+  fwhm = 3, thresh = 0.005, radius = NULL, reverse = FALSE,
+  verbose = TRUE, retimg = FALSE, outDir = NULL, propMiss = NULL)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}
@@ -40,9 +40,4 @@ Estimated IMCo coupling maps, either written to files and/or returned as nifti o
 }
 \description{
 Implements full volumetric IMCo coupling estimation on a single subject
-}
-\examples{
-\dontrun{
-
-}
 }
