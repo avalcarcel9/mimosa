@@ -114,7 +114,7 @@ if (have_data) {
 ```
 
 ```{r, include=FALSE}
-knitr::opts_chunk(eval = have_data)
+knitr::opts_chunk$set(eval = have_data)
 ```
 
 ### Preprocessing
