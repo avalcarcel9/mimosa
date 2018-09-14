@@ -37,13 +37,13 @@ before_install:
   - cmake --version
   - x=`cmake_setup`; echo "${x}"; eval ${x};
   - cmake --version
-  - export ants_user=muschellij2
+#  - export ants_user=muschellij2
+  - export ants_user=neuroconductor-devel
   - install_missing_remote_deps ${ants_user}/ITKR ${ants_user}/ANTsRCore ${ants_user}/ANTsR
   - echo "Done Installing Missing Deps"
   - gh_binary_install ${ants_user}/ITKR
   - gh_binary_install ${ants_user}/ANTsRCore
-# - gh_binary_install ${ants_user}/ANTsR
-  - gh_binary_install ANTsX/ANTsR
+  - gh_binary_install ${ants_user}/ANTsR
   - cat DESCRIPTION
   - install_remotes_no_dep
   - cat DESCRIPTION
