@@ -14,7 +14,7 @@ LazyData: TRUE
 RoxygenNote: 6.1.0
 Encoding: UTF-8
 Remotes: muschellij2/extrantsr, ANTsX/ANTsRCore, 
-    muschellij2/neurobase, jonclayden/mmand
+    muschellij2/neurobase, jonclayden/mmand, muschellij2/WhiteStripe
 Packaged: 2017-08-24 17:32:43 UTC; alval
 URL: https://github.com/avalcarcel9/mimosa
 BugReports: https://github.com/avalcarcel9/mimosa/issues
