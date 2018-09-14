@@ -42,7 +42,8 @@ before_install:
   - echo "Done Installing Missing Deps"
   - gh_binary_install ${ants_user}/ITKR
   - gh_binary_install ${ants_user}/ANTsRCore
-  - gh_binary_install ${ants_user}/ANTsR
+# - gh_binary_install ${ants_user}/ANTsR
+  - gh_binary_install ANTsX/ANTsR
   - cat DESCRIPTION
   - install_remotes_no_dep
   - cat DESCRIPTION
