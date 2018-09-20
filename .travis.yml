@@ -6,7 +6,14 @@ warnings_are_errors: true
 use_bioc: true
 bioc_required: true
 cran: http://cran.rstudio.com
-dist: precise
+
+dist: trusty
+addons:
+  apt:
+    packages:
+    - libfftw3-dev
+    - libgsl0-dev
+    - libgsl0ldbl
 
 os:
   - linux
@@ -19,10 +26,10 @@ r_check_args: --as-cran
 before_install:
   - export RGL_USE_NULL=TRUE
   - export PROJ_DIR=`basename $PWD`
+  - export LD_LIBRARY_PATH=/usr/local/clang/lib:${LD_LIBRARY_PATH}
   - fname=travis_helpers.sh
   - wget -O ${fname} http://bit.ly/travis_helpers
   - cat ${fname}; source ${fname}; rm ${fname}
-  - Rscript -e 'source("https://install-github.me/mangothecat/callr")'
   - cat DESCRIPTION
   - start_xvfb ;
   - no_open_mp ;   
@@ -33,14 +40,15 @@ before_install:
   - echo "CC=${CC}, CXX=${CXX}, CXX1X=${CXX1X}"
   - echo "CXX1XSTD=${CXX1XSTD}, CXX11=${CXX11}"
   - clang_cxx
-  - export cmake_version="3.4"
+  - export cmake_version="3.11"
   - cmake --version
   - x=`cmake_setup`; echo "${x}"; eval ${x};
   - cmake --version
-  - export ants_user=muschellij2
-  - install_missing_remote_deps ${ants_user}/ITKR ${ants_user}/ANTsRCore ${ants_user}/ANTsR
+#  - export ants_user=muschellij2
+  - export ants_user=ANTsX
+  - install_missing_remote_deps stnava/ITKR ${ants_user}/ANTsRCore ${ants_user}/ANTsR
   - echo "Done Installing Missing Deps"
-  - gh_binary_install ${ants_user}/ITKR
+  - gh_binary_install stnava/ITKR
   - gh_binary_install ${ants_user}/ANTsRCore
   - gh_binary_install ${ants_user}/ANTsR
   - cat DESCRIPTION
