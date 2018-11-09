@@ -13,7 +13,6 @@ License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.1.1
 Encoding: UTF-8
-
 Packaged: 2017-08-24 17:32:43 UTC; alval
 URL: https://github.com/avalcarcel9/mimosa
 BugReports: https://github.com/avalcarcel9/mimosa/issues
