@@ -22,7 +22,7 @@ imco_single <- function(files, vxl, brainMask, subMask=NULL, ref=1, neighborhood
         stop('check reference modality specification')
     }
     nf = length(files)
-    fileList = check_ants(files)
+    fileList = extrantsr::check_ants(files)
     for(i in 2:length(files)){
         if(!all(dim(fileList[[i-1]])==dim(fileList[[i]]))){
             stop('Image dimensions do not match')
