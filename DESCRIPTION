@@ -11,7 +11,7 @@ Imports: ANTsRCore (>= 0.4.0), rlist (>= 0.4.5), extrantsr (>= 1.2.0),
     oasis (>= 2.1), utils (>= 3.2.5), dplyr, stats, WhiteStripe (>= 2.2.2)
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 Remotes: muschellij2/extrantsr, ANTsX/ANTsRCore, 
     muschellij2/neurobase, jonclayden/mmand, muschellij2/WhiteStripe
