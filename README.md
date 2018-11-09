@@ -32,7 +32,7 @@ avalcarcel9 badges:
 
 muschellij2 badges:
 
-[![Travis-CI Build Status](https://travis-ci.org/muschellij2/mimosa.svg?branch=master)](https://travis-ci.org/muschellij2/mimosa)
+[![Travis-CI Build Status](https://travis-ci.org/avalcarcel9/mimosa.svg?branch=master)](https://travis-ci.org/muschellij2/mimosa)
 
 <!-- [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/muschellij2/mimosa?branch=master&svg=true)](https://ci.appveyor.com/project/muschellij2/mimosa) -->
 [![Coverage status](https://coveralls.io/repos/github/muschellij2/mimosa/badge.svg)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
