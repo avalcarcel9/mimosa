@@ -1,7 +1,7 @@
 Package: mimosa
 Type: Package
 Title: 'MIMoSA': A Method for Inter-Modal Segmentation Analysis
-Version: 0.5.6
+Version: 0.5.7
 Authors@R: c(person("Alessandra", "Valcarcel", role = c("aut", "cre"), email =
     "alval@pennmedicine.upenn.edu"))
 Maintainer: Alessandra Valcarcel <alval@pennmedicine.upenn.edu>
