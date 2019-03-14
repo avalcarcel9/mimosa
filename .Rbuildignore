@@ -1,13 +1,2 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.travis\.yml$
-^appveyor\.yml$
-^README\.html$
-^README\.Rmd$
-^README-.*\.png$
-DESCRIPTION~
-^icon\.ai$
-^icon\.png$
-^icon2\.png$
-^sticker\.R$
-^sticker\.png$
