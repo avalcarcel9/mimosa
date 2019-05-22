@@ -42,8 +42,3 @@ List of objects
 \description{
 This function creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes as well as binary masks of lesions. The function can create a tissue mask for the data (or the user can supply a brain mask), the candidate voxels for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method.
 }
-\examples{
-\dontrun{
-
-}
-}

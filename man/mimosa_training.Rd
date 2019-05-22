@@ -55,8 +55,3 @@ This function trains the MIMoSA model from the data frames
 produced by mimosa_data on all subjects and determines optimal threshold
 based on training data
 }
-\examples{
-\dontrun{
-
-}
-}

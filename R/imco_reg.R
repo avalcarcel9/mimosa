@@ -17,9 +17,9 @@
 #' @importFrom rlist list.rbind
 #' @importFrom stats coef cov.wt lm.wfit
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
-#' @examples \dontrun{
-#' 
-#'}
+# @examples \dontrun{
+# 
+#}
 imco_reg <- function(files, nhoods, nWts, mask_indices, ref=1, reverse=FALSE, verbose=TRUE, retimg=FALSE, outDir=NULL, propMiss=NULL){
 	if(verbose){
 		cat("# Computing weighted regressions \n")

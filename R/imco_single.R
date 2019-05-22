@@ -11,9 +11,9 @@
 #' @importFrom extrantsr check_ants
 #' @importFrom rlist list.cbind
 #' @return Data frame
-#' @examples \dontrun{
-#' 
-#'}
+# @examples \dontrun{
+# 
+#}
 imco_single <- function(files, vxl, brainMask, subMask=NULL, ref=1, neighborhoodSize=3){
     if(!(as.integer(neighborhoodSize)==neighborhoodSize)){
         stop('neighborhoodSize must be an odd integer')

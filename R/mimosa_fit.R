@@ -6,9 +6,9 @@
 #' @export
 #' @importFrom stats glm binomial
 #' @return Returns a glm object containing the trained MIMoSA coefficients.
-#' @examples \dontrun{
-#'
-#'}
+# @examples \dontrun{
+#
+#}
 
 mimosa_fit <- function(training_dataframe, formula) {
 
