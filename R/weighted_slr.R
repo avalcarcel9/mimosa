@@ -8,9 +8,9 @@
 #' @param refImg reference image for header info
 #' @export
 #' @return L list including intercept and slope from both weighted SLRs
-#' @examples \dontrun{
-#' 
-#'}
+# @examples \dontrun{
+# 
+#}
 weighted_slr <- function(x, y, wts, mInds, refImg = NULL) {
   cs = function(x) {
     colSums(x, na.rm = TRUE)

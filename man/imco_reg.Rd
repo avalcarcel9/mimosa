@@ -34,8 +34,3 @@ Estimated IMCo coupling maps, either written to files and/or returned as nifti o
 \description{
 Implements full volumetric IMCo coupling estimation on a single subject using regression approach
 }
-\examples{
-\dontrun{
-
-}
-}

@@ -23,9 +23,9 @@
 #' @importFrom utils combn
 #' @importFrom WhiteStripe whitestripe whitestripe_norm
 #' @return List of objects
-#' @examples \dontrun{
-#'
-#'}
+# @examples \dontrun{
+#
+#}
 
 mimosa_data <- function (brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,
                          gold_standard = NULL, normalize = 'no', cand_mask = NULL, slices = NULL,

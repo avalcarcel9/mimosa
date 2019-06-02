@@ -26,8 +26,3 @@ Data frame
 \description{
 Data for coupling estimation on a single subject and single voxel
 }
-\examples{
-\dontrun{
-
-}
-}

@@ -17,8 +17,3 @@ Returns a glm object containing the trained MIMoSA coefficients.
 \description{
 This function trains the MIMoSA model from a data.frame produced by an element from the output of the function mimosa_data.
 }
-\examples{
-\dontrun{
-
-}
-}

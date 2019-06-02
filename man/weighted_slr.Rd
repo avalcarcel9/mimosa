@@ -23,8 +23,3 @@ L list including intercept and slope from both weighted SLRs
 \description{
 Returns parameters from weighted regression of y on x (primary) and x on y (secondary, "reverse")
 }
-\examples{
-\dontrun{
-
-}
-}

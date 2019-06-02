@@ -4,7 +4,7 @@ author: "Alessandra Valcarcel"
 date: "`r Sys.Date()`"
 output: rmarkdown::github_document
 vignette: >
-  %\VignetteIndexEntry{mimosa}
+  %\VignetteIndexEntry{mimosa_github}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

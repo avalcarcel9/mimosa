@@ -19,8 +19,3 @@ make_ants_image(vec, mask_indices, reference)
 \description{
 Convert vector of IMCo into ANTS image
 }
-\examples{
-\dontrun{
-
-}
-}

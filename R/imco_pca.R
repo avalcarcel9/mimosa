@@ -16,9 +16,9 @@
 #' @importFrom rlist list.rbind
 #' @importFrom stats cov.wt
 #' @return Estimated IMCo coupling maps, either written to files and/or returned as nifti objects
-#' @examples \dontrun{
-#' 
-#'}
+# @examples \dontrun{
+# 
+#}
 imco_pca <- function(files, nhoods, nWts, mask_indices, ref=1, verbose=TRUE, retimg=FALSE, outDir=NULL, propMiss=NULL){
     # Restructure to get eigen decomp at each voxel
 	imgVals = lapply(nhoods, function(x) x$values)

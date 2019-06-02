@@ -1,2 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.Rmd$
+^\.travis\.yml$
+^appveyor\.yml$
+^icon\.ai$
+^icon\.png$
+^icon2\.png$
+^sticker\.R$
+^sticker\.png$

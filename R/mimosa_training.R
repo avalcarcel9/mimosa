@@ -33,9 +33,9 @@
 #' @importFrom utils write.csv
 #' @return GLM objects fit in the MIMoSA procedure and optimal threshold
 #' evaluated for full training set
-#' @examples \dontrun{
-#'
-#'}
+# @examples \dontrun{
+#
+#}
 #### #' @importFrom data.table rbindlist
 
 mimosa_training <- function(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL, tissue = FALSE,

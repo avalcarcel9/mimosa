@@ -19,8 +19,3 @@ vector of weights
 \description{
 Gets weights for IMCo model
 }
-\examples{
-\dontrun{
-
-}
-}
