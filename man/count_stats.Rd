@@ -14,7 +14,7 @@ count_stats(gold_standard, predicted_segmentation, k = Inf,
 
 \item{k}{Minimum number of voxels for a segmentation cluster/component}
 
-\item{percent_overlap}{Proportion of gold standard segmentation to be overlaped by predicted}
+\item{percent_overlap}{Proportion of gold standard segmentation to be overlapped by predicted}
 
 \item{verbose}{Logical indicating printing diagnostic output}
 }

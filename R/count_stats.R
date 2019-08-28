@@ -4,7 +4,7 @@
 #' @param gold_standard Gold standard segmentation mask of class nifti
 #' @param predicted_segmentation Predicted segmentation mask volume of class nifti
 #' @param k Minimum number of voxels for a segmentation cluster/component
-#' @param percent_overlap Proportion of gold standard segmentation to be overlaped by predicted
+#' @param percent_overlap Proportion of gold standard segmentation to be overlapped by predicted
 #' @param verbose Logical indicating printing diagnostic output
 #' @export
 #' @importFrom extrantsr label_mask

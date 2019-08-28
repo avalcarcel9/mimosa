@@ -25,9 +25,9 @@ a full brain mask or tissue mask (excludes CSF), should be FALSE unless
 you provide the tissue mask as the brain_mask object}
 
 \item{gold_standard}{vector of full path to Gold standard segmentations.
-Typically manually segemented images.}
+Typically manually segmented images.}
 
-\item{normalize}{is 'no' by default and will not perform any normalization on data. To normalize data specifcy 'Z' for z-score normalization or 'WS' for WhiteStripe normalization}
+\item{normalize}{is 'no' by default and will not perform any normalization on data. To normalize data specify 'Z' for z-score normalization or 'WS' for WhiteStripe normalization}
 
 \item{slices}{vector of desired slices to train on, if NULL then train
 over the entire brain mask}
