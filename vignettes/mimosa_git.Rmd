@@ -8,7 +8,7 @@ output:
       base_format: rmarkdown::html_vignette
       keep_md: true
 vignette: >
-  %\VignetteIndexEntry{mimosa}
+  %\VignetteIndexEntry{mimosa_git}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
