@@ -2,7 +2,11 @@
 title: "MIMoSA: A Method for Inter-Modal Segmentation Analysis"
 author: "Alessandra Valcarcel"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+    rmarkdown::html_document:
+      base_format: rmarkdown::html_vignette
+      keep_md: true
+    rmarkdown::github_document:
 vignette: >
   %\VignetteIndexEntry{mimosa}
   %\VignetteEngine{knitr::rmarkdown}
@@ -54,7 +58,7 @@ The data consists of a set of training subjects in the training folder for which
 For these analysis, we will use the ISBI_Challenge_2015/training/training01/preprocessed data to train the model using the gold standard manually segmented images in  ISBI_Challenge_2015/training/masks/training01_0#\_mask2.nii. We will then apply the trained model on ISBI_Challenge_2015/testdata_website/test01/preprocessed/ images to generate probability maps and MIMoSA predicted lesion masks. We will also use ISBI_Challenge_2015/training/training02/preprocessed/ data from the first time point to evaluate performance.
 If you have your own data you can adapt code provided here and apply the methods to your own data. For this reason, all code provided is intended to provide a direct application of methods therefore speed and efficiency were sacrificed in the examples provided.
 
-### Creating a filename `matrix`
+### Creating a file name `matrix`
 
 Before loading the data into R let's first organize the image file paths into a `matrix`.
 
@@ -118,7 +122,7 @@ filepaths
 
 ### Preprocessing
 
-The `mimosa` package does not provide a preprocessing pipeline function. For the preprocessing pipeline used in the original methods please see our [paper](http://www.biorxiv.org/content/early/2017/06/15/150284). Before implementing the method, data should be inhomogeneity corrected, registered, skull stripped, and normalized to obtain accurate predicted lesion segmentations. The training functions in this package allow for z-score normalization, WhiteStripe normalization, or no normalization method for data that have been previousl normalized. 
+The `mimosa` package does not provide a preprocessing pipeline function. For the preprocessing pipeline used in the original methods please see our [paper](http://www.biorxiv.org/content/early/2017/06/15/150284). Before implementing the method, data should be inhomogeneity corrected, registered, skull stripped, and normalized to obtain accurate predicted lesion segmentations. The training functions in this package allow for z-score normalization, WhiteStripe normalization, or no normalization method for data that have been previously normalized. 
 
 Some preprocessing tips:
 

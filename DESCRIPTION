@@ -7,17 +7,17 @@ Authors@R: c(person("Alessandra", "Valcarcel", role = c("aut", "cre"), email =
 Maintainer: Alessandra Valcarcel <alval@pennmedicine.upenn.edu>
 Description: Trains and makes predictions from the 'MIMoSA' method. 
 Imports: 
-  ANTsRCore (>= 0.6.0.0),
+  ANTsRCore (>= 0.7.0),
   dplyr,
-  extrantsr (>= 2.0.0.0000),
+  extrantsr (>= 3.9.9),
   fslr (>= 2.12.0),
   neurobase (>= 1.13.2),
-  oasis (>= 2.1),
+  oasis (>= 3.0.4),
   parallel (>= 2.14.0),
   rlist (>= 0.4.5),
   stats,
   utils (>= 3.2.5),
-  WhiteStripe (>= 2.2.2)
+  WhiteStripe (>= 2.3.1)
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.1.1
