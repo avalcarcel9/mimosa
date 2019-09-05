@@ -2,7 +2,7 @@
 #'
 #' @description Data for coupling estimation on a single subject and single voxel
 #' @param files Vector of full paths to images or a list of local nifti objects
-#' @param vxl Vector of single voxel indicies to get data from
+#' @param vxl Vector of single voxel indices to get data from
 #' @param brainMask Full path to brain mask or local nifti object
 #' @param subMask NULL or local nifti object or the full path to a mask that is a subset of brain mask where coupling should be computed
 #' @param ref reference modality when type="pca" or dependent modality when type="regression"
