@@ -7,9 +7,9 @@ Authors@R: c(person("Alessandra", "Valcarcel", role = c("aut", "cre"), email =
 Maintainer: Alessandra Valcarcel <alval@pennmedicine.upenn.edu>
 Description: Trains and makes predictions from the 'MIMoSA' method. 
 Imports: 
-  ANTsRCore (>= 0.7.0),
+  ANTsRCore (>= 0.3.4),
   dplyr,
-  extrantsr (>= 3.9.9),
+  extrantsr (>= 3.1),
   fslr (>= 2.24.1),
   neurobase (>= 1.27.11),
   oasis (>= 3.0.1),
@@ -23,19 +23,21 @@ LazyData: TRUE
 RoxygenNote: 6.1.1
 Encoding: UTF-8
 Remotes:  
-  ANTsX/ANTsRCore,
-  muschellij2/extrantsr,
+  neuroconductor/ANTsR@bb8aeacac74c9969fe0693cffb82291ba192fe31,
+  neuroconductor/ANTsRCore@55d658eb9f3e265a3dd11aea0d423d876cb2794c,
+  neuroconductor/extrantsr@eb3e9ab6e4a081ef9134ae2b47260817f44b2834,
   jonclayden/mmand,
-  muschellij2/neurobase,
+  neuroconductor/neurobase@69edde6d85b13cf182ed5990e6c4166795128977,
+  neuroconductor/oro.nifti@c8832b410ec2ccd86b23e23db79d8d0291fecb2a,
   muschellij2/WhiteStripe
 Packaged: 2017-08-24 17:32:43 UTC; alval
 URL: https://github.com/avalcarcel9/mimosa
 BugReports: https://github.com/avalcarcel9/mimosa/issues
 Suggests:
-    spelling, 
   covr,
   knitr,
-  testthat,
-  rmarkdown
+  rmarkdown,
+  spelling, 
+  testthat
 VignetteBuilder: knitr
 Language: en-US

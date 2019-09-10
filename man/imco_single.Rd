@@ -10,7 +10,7 @@ imco_single(files, vxl, brainMask, subMask = NULL, ref = 1,
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}
 
-\item{vxl}{Vector of single voxel indicies to get data from}
+\item{vxl}{Vector of single voxel indices to get data from}
 
 \item{brainMask}{Full path to brain mask or local nifti object}
 
