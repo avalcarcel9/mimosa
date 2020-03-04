@@ -4,8 +4,13 @@
 \alias{count_stats}
 \title{Calculate performance statistics}
 \usage{
-count_stats(gold_standard, predicted_segmentation, k = Inf,
-  percent_overlap = NULL, verbose = TRUE)
+count_stats(
+  gold_standard,
+  predicted_segmentation,
+  k = Inf,
+  percent_overlap = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{gold_standard}{Gold standard segmentation mask of class nifti}

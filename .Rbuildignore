@@ -9,3 +9,6 @@
 ^sticker\.R$
 ^sticker\.png$
 ^codecov\.yml$
+^build\.sh$
+^run\.sh$
+^Dockerfile$

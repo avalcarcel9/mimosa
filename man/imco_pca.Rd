@@ -4,8 +4,17 @@
 \alias{imco_pca}
 \title{PCA Inter-modal Coupling Model}
 \usage{
-imco_pca(files, nhoods, nWts, mask_indices, ref = 1, verbose = TRUE,
-  retimg = FALSE, outDir = NULL, propMiss = NULL)
+imco_pca(
+  files,
+  nhoods,
+  nWts,
+  mask_indices,
+  ref = 1,
+  verbose = TRUE,
+  retimg = FALSE,
+  outDir = NULL,
+  propMiss = NULL
+)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}

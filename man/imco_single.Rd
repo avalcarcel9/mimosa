@@ -4,8 +4,14 @@
 \alias{imco_single}
 \title{Single Inter-modal Coupling model}
 \usage{
-imco_single(files, vxl, brainMask, subMask = NULL, ref = 1,
-  neighborhoodSize = 3)
+imco_single(
+  files,
+  vxl,
+  brainMask,
+  subMask = NULL,
+  ref = 1,
+  neighborhoodSize = 3
+)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}

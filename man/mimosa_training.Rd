@@ -4,10 +4,22 @@
 \alias{mimosa_training}
 \title{Train MIMoSA model on full training set}
 \usage{
-mimosa_training(brain_mask, FLAIR, T1, T2 = NULL, PD = NULL,
-  tissue = FALSE, gold_standard, normalize = "no", slices = NULL,
-  orientation = c("axial", "coronal", "sagittal"), cores = 1,
-  verbose = TRUE, outdir = NULL, optimal_threshold = NULL)
+mimosa_training(
+  brain_mask,
+  FLAIR,
+  T1,
+  T2 = NULL,
+  PD = NULL,
+  tissue = FALSE,
+  gold_standard,
+  normalize = "no",
+  slices = NULL,
+  orientation = c("axial", "coronal", "sagittal"),
+  cores = 1,
+  verbose = TRUE,
+  outdir = NULL,
+  optimal_threshold = NULL
+)
 }
 \arguments{
 \item{brain_mask}{vector of full path to brain mask}
