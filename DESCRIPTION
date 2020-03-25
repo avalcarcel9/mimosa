@@ -20,9 +20,9 @@ Imports:
   WhiteStripe (>= 2.3.1)
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
-Remotes:  
+Remotes: 
   neuroconductor/ANTsR@bb8aeacac74c9969fe0693cffb82291ba192fe31,
   neuroconductor/ANTsRCore@55d658eb9f3e265a3dd11aea0d423d876cb2794c,
   neuroconductor/extrantsr@eb3e9ab6e4a081ef9134ae2b47260817f44b2834,

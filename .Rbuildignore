@@ -12,3 +12,6 @@
 ^_pkgdown\.yml$
 ^pkgdown\.sh$
 ^docs$
+^build\.sh$
+^run\.sh$
+^Dockerfile$

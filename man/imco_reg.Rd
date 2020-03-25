@@ -4,8 +4,18 @@
 \alias{imco_reg}
 \title{Regression Inter-modal Coupling Model}
 \usage{
-imco_reg(files, nhoods, nWts, mask_indices, ref = 1, reverse = FALSE,
-  verbose = TRUE, retimg = FALSE, outDir = NULL, propMiss = NULL)
+imco_reg(
+  files,
+  nhoods,
+  nWts,
+  mask_indices,
+  ref = 1,
+  reverse = FALSE,
+  verbose = TRUE,
+  retimg = FALSE,
+  outDir = NULL,
+  propMiss = NULL
+)
 }
 \arguments{
 \item{files}{Vector of full paths to images or a list of local nifti objects}
