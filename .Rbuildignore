@@ -9,3 +9,6 @@
 ^sticker\.R$
 ^sticker\.png$
 ^codecov\.yml$
+^_pkgdown\.yml$
+^pkgdown\.sh$
+^docs$
