@@ -1,23 +1,25 @@
 ---
-title: "MIMoSA: A Method for Inter-Modal Segmentation Analysis"
-author: "Alessandra Valcarcel"
-date: "`r Sys.Date()`"
-output: 
-    rmarkdown::html_document:
-      base_format: rmarkdown::html_vignette
-      keep_md: true
-    rmarkdown::github_document:
+title: "mimosa"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{mimosa}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
 ## Overview
 
-The mimosa package trains and makes predictions from the MIMoSA method. Access to the full paper can be found [here](http://www.biorxiv.org/content/early/2017/06/15/150284). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
+The `mimosa` package trains and makes predictions from the MIMoSA method. Access to the full papers can be found [here](https://onlinelibrary.wiley.com/doi/abs/10.1111/jon.12506) and [here](https://doi.org/10.1016/j.nicl.2018.10.013). Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.
 
-Due to constraints with Neuroconductor code and output could not be compiled together. If you would like to follow a vignette with code and relevant output please use the version available on my [github](https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa.Rmd).
+Follow this vignette using the `pkgdown` built reference [here](https://avalcarcel9.github.io/mimosa/articles/mimosa.html).
 
 ## Installation
 
@@ -58,7 +60,7 @@ The data consists of a set of training subjects in the training folder for which
 For these analysis, we will use the ISBI_Challenge_2015/training/training01/preprocessed data to train the model using the gold standard manually segmented images in  ISBI_Challenge_2015/training/masks/training01_0#\_mask2.nii. We will then apply the trained model on ISBI_Challenge_2015/testdata_website/test01/preprocessed/ images to generate probability maps and MIMoSA predicted lesion masks. We will also use ISBI_Challenge_2015/training/training02/preprocessed/ data from the first time point to evaluate performance.
 If you have your own data you can adapt code provided here and apply the methods to your own data. For this reason, all code provided is intended to provide a direct application of methods therefore speed and efficiency were sacrificed in the examples provided.
 
-### Creating a file name `matrix`
+### Creating a filename `matrix`
 
 Before loading the data into R let's first organize the image file paths into a `matrix`.
 
@@ -75,12 +77,6 @@ if (grepl("muschel", user )) {
   test_data_dir = file.path(data_dir, "testdata_website")
 }
 train_dir = file.path(data_dir, "training01")
-
-## Ignore
-## Vignette global options to not run chunks
-eval = FALSE # don't run
-eval = file.exists(train_dir) && eval
-knitr::opts_chunk$set(eval = eval)
 ```
 
 
@@ -114,10 +110,19 @@ GS_files = list.files(path =
                                   "masks"), 
                       pattern = "mask2[.]nii", 
                       full.names = TRUE)
-filepaths = data.frame(T1 = T1_files, T2 = T2_files, FLAIR = FLAIR_files, PD = PD_files, GS = GS_files, stringsAsFactors = FALSE)
-ss = strsplit(nii.stub(filepaths$T1), split = "_")
-filepaths$visit_id = sapply(ss, function(x) x[2])
-filepaths
+filepaths = data.frame(T1 = T1_files, T2 = T2_files, 
+                       FLAIR = FLAIR_files, PD = PD_files, GS = GS_files,
+                       stringsAsFactors = FALSE)
+have_data = nrow(filepaths) > 0
+if (have_data) {
+  ss = strsplit(nii.stub(filepaths$T1), split = "_")
+  filepaths$visit_id = sapply(ss, function(x) x[2])
+  filepaths
+}
+```
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = have_data)
 ```
 
 ### Preprocessing
@@ -198,6 +203,7 @@ mimosa_data = mimosa_data(
   orientation = c("axial", "coronal", "sagittal"), 
   cores = 1, 
   verbose = TRUE)
+
 ```
 
 A note on the returned objects:
@@ -699,6 +705,4 @@ The method performs best when trained on data. Since gold standard manual segmen
 - mimosa_model_No_PD_T2 trained using FLAIR and T1 imaging modalities
 
 Since this model is already trained you can skip the "Train the MIMoSA Model" section and go straight to "Apply to Test Subjects" through "Generate Predicted Lesion Masks" and you can obtain predicted lesion masks. This is because in the "Train the MIMoSA Model" section we generated a model `mimosa_model` and the fully trained model available through the package is also named `mimosa_model`.
-
-
 

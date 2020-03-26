@@ -4,7 +4,6 @@
 #' @param vec vector of IMCo values
 #' @param mask_indices voxels where IMCo was computed
 #' @param reference image for header info
-#' @export
 #' @importFrom ANTsRCore as.antsImage
 #' @return 3D ANTS image of IMCo measurements
 # @examples \dontrun{

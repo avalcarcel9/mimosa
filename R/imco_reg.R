@@ -11,7 +11,6 @@
 #' @param retimg If TRUE, return list of estimated coupling maps as nifti objects
 #' @param outDir Full path to directory where maps should be written
 #' @param propMiss Maximum proportion of missing voxels in a neighborhood to tolerate, i.e., return NA if missing more than propMiss in the neighborhood of the center voxel
-#' @export
 #' @importFrom ANTsRCore antsImageWrite
 #' @importFrom extrantsr ants2oro
 #' @importFrom rlist list.rbind

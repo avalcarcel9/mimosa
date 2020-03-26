@@ -10,27 +10,23 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
-
-<!-- bootstrap-toc -->
-<link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -57,7 +53,7 @@
 
   </head>
 
-  <body data-spy="scroll" data-target="#toc">
+  <body>
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -89,22 +85,10 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/mimosa_git.html">MIMoSA: A Method for Inter-Modal Segmentation Analysis</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/avalcarcel9/mimosa/">
+  <a href="https://github.com/avalcarcel9/mimosa">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -136,76 +120,59 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-generate-mimosa-data" class="hasAnchor"><a href="#section-generate-mimosa-data" class="anchor"></a>Generate MIMoSA Data</h2>
+          <p class="section-desc"><p>This function generates the MIMoSA data.</p></p>
         </th>
       </tr>
-      
-      
-    </tbody><tbody>
-      
-      
       <tr>
-        
-        <td>
-          <p><code><a href="count_stats.html">count_stats()</a></code> </p>
-        </td>
-        <td><p>Calculate performance statistics</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_weights.html">get_weights()</a></code> </p>
-        </td>
-        <td><p>Weights for IMCo model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="imco.html">imco()</a></code> </p>
-        </td>
-        <td><p>Inter-modal Coupling Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="imco_pca.html">imco_pca()</a></code> </p>
-        </td>
-        <td><p>PCA Inter-modal Coupling Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="imco_reg.html">imco_reg()</a></code> </p>
-        </td>
-        <td><p>Regression Inter-modal Coupling Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="imco_single.html">imco_single()</a></code> </p>
-        </td>
-        <td><p>Single Inter-modal Coupling model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_ants_image.html">make_ants_image()</a></code> </p>
-        </td>
-        <td><p>make_ants_image</p></td>
-      </tr><tr>
         
         <td>
           <p><code><a href="mimosa_data.html">mimosa_data()</a></code> </p>
         </td>
         <td><p>MIMoSA Training Data Frame</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-training-the-mimosa-model" class="hasAnchor"><a href="#section-training-the-mimosa-model" class="anchor"></a>Training the MIMoSA Model</h2>
+          <p class="section-desc"><p>These functions train the MIMoSA model from the training data or by generating the training data and then fitting the model.</p></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="mimosa_training.html">mimosa_training()</a></code> </p>
+        </td>
+        <td><p>Train MIMoSA model on full training set</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="mimosa_fit.html">mimosa_fit()</a></code> </p>
         </td>
         <td><p>MIMoSA Fit on Training Data</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-mimosa-formula-options" class="hasAnchor"><a href="#section-mimosa-formula-options" class="anchor"></a>MIMoSA Formula Options</h2>
+          <p class="section-desc"><p>This function outputs the MIMoSA formula based on image modalities included and excluded from the full model. This may be useful for training.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="mimosa_formula.html">mimosa_formula()</a></code> </p>
         </td>
         <td><p>MIMoSA Model Formula</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-pre-trained-mimosa-models" class="hasAnchor"><a href="#section-pre-trained-mimosa-models" class="anchor"></a>Pre-Trained MIMoSA Models</h2>
+          <p class="section-desc"><p>These data contain the MIMoSA pre-trained models. These various models each utilize different imaging modalities during training.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="mimosa_model.html">mimosa_model</a></code> </p>
@@ -229,27 +196,34 @@
           <p><code><a href="mimosa_model_No_T2.html">mimosa_model_No_T2</a></code> </p>
         </td>
         <td><p>MIMoSA trained model when T2 sequence is missing</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-calculate-performance-statistics" class="hasAnchor"><a href="#section-calculate-performance-statistics" class="anchor"></a>Calculate Performance Statistics</h2>
+          <p class="section-desc"><p>This function calculate segmentation performance metrics like true positive rate, false positive rate, false negative rate, false positive count, and sensitivity.</p></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
-          <p><code><a href="mimosa_training.html">mimosa_training()</a></code> </p>
+          <p><code><a href="count_stats.html">count_stats()</a></code> </p>
         </td>
-        <td><p>Train MIMoSA model on full training set</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="weighted_slr.html">weighted_slr()</a></code> </p>
-        </td>
-        <td><p>Weighted simple linear regression</p></td>
+        <td><p>Calculate performance statistics</p></td>
       </tr>
     </tbody>
     </table>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <nav id="toc" data-toggle="toc" class="sticky-top">
-      <h2 data-toc-skip>Contents</h2>
-    </nav>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#section-generate-mimosa-data">Generate MIMoSA Data</a></li>
+      <li><a href="#section-training-the-mimosa-model">Training the MIMoSA Model</a></li>
+      <li><a href="#section-mimosa-formula-options">MIMoSA Formula Options</a></li>
+      <li><a href="#section-pre-trained-mimosa-models">Pre-Trained MIMoSA Models</a></li>
+      <li><a href="#section-calculate-performance-statistics">Calculate Performance Statistics</a></li>
+    </ul>
   </div>
 </div>
 
@@ -260,7 +234,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

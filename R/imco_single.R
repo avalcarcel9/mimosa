@@ -7,7 +7,6 @@
 #' @param subMask NULL or local nifti object or the full path to a mask that is a subset of brain mask where coupling should be computed
 #' @param ref reference modality when type="pca" or dependent modality when type="regression"
 #' @param neighborhoodSize Full width in voxels for FWHM
-#' @export
 #' @importFrom extrantsr check_ants
 #' @importFrom rlist list.cbind
 #' @return Data frame

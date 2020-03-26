@@ -3,18 +3,17 @@
 
 # mimosa <img src="sticker.png" width = "150" align="right" />
 
-`mimosa` is an R package based on the paper: [MIMoSA: An Automated
-Method for Inter-Modal Segmentation Analysis of Multiple Sclerosis Brain
-Lesions](http://onlinelibrary.wiley.com/doi/10.1111/jon.12506/full) by
-Valcarcel et al. published in the [Journal of
-Neuroimaging](http://onlinelibrary.wiley.com/journal/10.1111/\(ISSN\)1552-6569).
-This package creates data structures necessary for training and testing
-and then allows the user to train a model and then apply the trained
-model to generate probability maps and predicted lesion segmentations.
+The `mimosa` package trains and makes predictions from the MIMoSA
+method. Access to the full papers can be found
+[here](https://onlinelibrary.wiley.com/doi/abs/10.1111/jon.12506) and
+[here](https://doi.org/10.1016/j.nicl.2018.10.013). Additionally, it
+allows for implementation of some common segmentation metrics such as
+true positive rate, false positive rate, false negative rate, false
+positive count, and sensitivity based on lesion count.
 
 ## Installation
 
-To install the package from neuroconductor, type:
+To install the package from Neuroconductor, type:
 
 ``` r
 source("https://neuroconductor.org/neurocLite.R")
@@ -47,168 +46,15 @@ Status](https://travis-ci.org/avalcarcel9/mimosa.svg?branch=master)](https://tra
 [![Coverage
 status](https://coveralls.io/repos/github/muschellij2/mimosa/badge.svg)](https://coveralls.io/r/muschellij2/mimosa?branch=master)
 
+## Package Documentation
+
+Check out our `pkgdown` site
+[here](https://avalcarcel9.github.io/mimosa/).
+
+Full functions and documentation references are available
+[here](https://avalcarcel9.github.io/mimosa/reference/index.html).
+
 ## Vignette
 
 For a full implementation of the methods with output please see our
-[vignette](https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa_git.md).
-
-## Functions
-
-Below is a list of the functions and a description of options available
-to utilize through the `mimosa` package.
-
-### count\_stats
-
-This function calculates true positive rate, false positive rate, false
-negative rate, false positive count, and sensitivity.
-
-Formulas for how these are calculated are provided in the ‘Evaluate
-Performance’ section.
-
-``` r
-count_stats(gold_standard, 
-            predicted_segmentation, 
-            k, 
-            percent_overlap = NULL, 
-            verbose = TRUE)
-```
-
-*Arguments*
-
-  - `gold_standard` Gold standard segmentation mask of class `nifti`
-  - `predicted_segmentation` Predicted segmentation mask volume of class
-    `nifti`
-  - `k` Minimum number of voxels for a segmentation cluster/component
-  - `percent_overlap` Proportion of gold standard segmentation to be
-    overlapped by predicted
-  - `verbose` Logical indicating printing diagnostic output
-
-### mimosa\_data
-
-This function creates the training vectors from a single MRI study that
-has FLAIR, T1, T2, and PD volumes. When utilizing the function for
-training you will also need gold standard binary segmentation mask. The
-function can create a tissue mask (or the user can supply a brain mask),
-a binary mask of candidate voxels for lesion segmentation, smoothed
-volumes, and coupling maps. The user may supply already normalized data
-if they wish to use an alternative normalization method.
-
-``` r
-mimosa_data(brain_mask, 
-            FLAIR, 
-            T1, 
-            T2 = NULL, 
-            PD = NULL, 
-            tissue = FALSE, 
-            gold_standard = NULL, 
-            normalize = 'no', 
-            cand_mask = NULL, 
-            slices = NULL, 
-            orientation = c("axial", "coronal", "sagittal"), 
-            cores = 1, 
-            verbose = TRUE)
-```
-
-*Arguments*
-
-  - `brain_mask` brain or tissue mask of class `nifti`
-  - `FLAIR` volume of class `nifti`
-  - `T1` volume of class `nifti`
-  - `T2` volume of class `nifti`. If not available use `NULL`.
-  - `PD` volume of class `nifti`. If not available use `NULL`.
-  - `tissue` is a logical value that determines whether the brain mask
-    is a full brain mask or tissue mask (excludes CSF), should be
-    `FALSE` unless you provide the tissue mask as the brain\_mask object
-  - `gold_standard` gold standard lesion segmentation mask of class
-    `nifti`
-  - `normalize` by default is ‘no’ will not normalize images. To
-    normalize images use inputs ‘Z’ for z-score normalization slices
-    vector of desired slices to train on, for WhiteStripe use ‘WS’
-  - `cand_mask` is `NULL` to use candidate mask procedure proposed with
-    method or a `nifti` object to be used as the candidate mask
-  - `slices` vector of desired slices to train on, if `NULL` then train
-    over the entire brain mask
-  - `orientation` string value telling which orientation the training
-    slices are specified in, can take the values of “axial”,“coronal”,
-    and “sagittal”,
-  - `cores` 1 numeric indicating the number of cores to be used (no more
-    than 4 is useful for this software implementation)
-  - `verbose` logical indicating printing diagnostic output
-
-### mimosa\_training
-
-This function trains the MIMoSA model from the data frames produced by
-`mimosa_data` on all subjects and determines an optimal threshold based
-on training data.
-
-``` r
-mimosa_training(brain_mask, 
-                FLAIR, 
-                T1, 
-                T2 = NULL, 
-                PD = NULL, 
-                tissue = FALSE, 
-                gold_standard, 
-                normalize = 'no', 
-                slices = NULL, 
-                orientation = c("axial", "coronal", "sagittal"), 
-                cores = 1, 
-                verbose = TRUE, 
-                outdir = NULL, 
-                optimal_threshold = NULL)
-```
-
-*Arguments*
-
-  - `brain_mask` vector of full path to brain mask
-  - `FLAIR` `vector` of full path to FLAIR
-  - `T1` `vector` of full path to T1
-  - `T2` `vector` of full path to T2 if available. If not use `NULL`.
-  - `PD` `vector` of full path to PD if available. If not use `NULL`.
-  - `tissue` is a logical value that determines whether the brain mask
-    is a full brain mask or tissue mask (excludes CSF), should be
-    `FALSE` unless you provide the tissue mask as the `brain_mask`
-    object
-  - `gold_standard` vector of full path to gold standard segmentations.
-    Typically manually segmented images.
-  - `normalize` by default is ‘no’ will not normalize images. To
-    normalize images use inputs ‘Z’ for z-score normalization slices
-    vector of desired slices to train on, for WhiteStripe use ‘WS’
-  - `orientation` if `NULL` then train over the entire brain mask
-    orientation string value telling which orientation the training
-    slices are specified in, can take the values of “axial”, “sagittal”,
-    or “coronal”
-  - `cores` numeric indicating the number of cores to be used (no more
-    than 4 is useful for this software implementation)
-  - `verbose` logical indicating printing diagnostic output
-  - `outdir` vector of paths/IDs to be pasted to objects that will be
-    saved. `NULL` if objects are not to be saved
-  - `optimal_threshold = NULL`. To run algorithm provide vector of
-    thresholds
-
-## Pre-Trained Models
-
-The method performs best when trained on data. Since gold standard
-manual segmentations are not always delineated though through the
-`mimosa` package we have trained four (4) distinct models for use. These
-models can be called and are stored under the following names:
-
-  - `mimosa_model` trained using FLAIR, T1, T2, and PD imaging
-    modalities
-  - `mimosa_model_No_PD` trained using FLAIR, T1, and T2 imaging
-    modalities
-  - `mimosa_model_No_T2` trained using FLAIR, T1, and PD imaging
-    modalities
-  - `mimosa_model_No_PD_T2` trained using FLAIR and T1 imaging
-    modalities
-
-Users should use the model which matches their imaging sequence. For
-example, if you only have data collected for FLAIR and T1 modalities
-then you should use the `mimosa_model_No_PD_No_T2`.
-
-``` r
-mimosa_model
-mimosa_model_No_PD
-mimosa_model_No_T2
-mimosa_model_No_PD_No_T2
-```
+[vignette](https://avalcarcel9.github.io/mimosa/articles/mimosa.html).

@@ -15,3 +15,5 @@
 ^build\.sh$
 ^run\.sh$
 ^Dockerfile$
+^doc$
+^Meta$

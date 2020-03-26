@@ -1,1 +1,37 @@
 url: https://avalcarcel9.github.io/mimosa/
+
+reference:
+  - title: "Generate MIMoSA Data"
+    desc: >
+      This function generates the MIMoSA data.
+    contents:
+      - mimosa_data
+  - title: "Training the MIMoSA Model"
+    desc: >
+      These functions train the MIMoSA model from the training data 
+      or by generating the training data and then fitting the model.
+    contents:
+      - mimosa_training
+      - mimosa_fit
+  - title: "MIMoSA Formula Options"
+    desc: >
+      This function outputs the MIMoSA formula based on image modalities 
+      included and excluded from the full model. This may be useful for 
+      training.
+    contents:
+      - mimosa_formula
+  - title: "Pre-Trained MIMoSA Models"
+    desc: >
+      These data contain the MIMoSA pre-trained models. These various 
+      models each utilize different imaging modalities during training.
+    contents:
+      - starts_with("mimosa_model")
+  - title: "Calculate Performance Statistics"
+    desc: >
+      This function calculate segmentation performance metrics like 
+      true positive rate, false positive rate, false negative rate, 
+      false positive count, and sensitivity.
+    contents:
+      - count_stats
+  
+  
