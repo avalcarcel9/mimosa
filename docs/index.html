@@ -73,11 +73,11 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#mimosa-" class="anchor"></a>mimosa <img src="sticker.png" width="150" align="right">
 </h1></div>
-<p><code>mimosa</code> is an R package based on the paper: <a href="http://onlinelibrary.wiley.com/doi/10.1111/jon.12506/full">MIMoSA: An Automated Method for Inter-Modal Segmentation Analysis of Multiple Sclerosis Brain Lesions</a> by Valcarcel et al. published in the <a href="http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1552-6569">Journal of Neuroimaging</a>. This package creates data structures necessary for training and testing and then allows the user to train a model and then apply the trained model to generate probability maps and predicted lesion segmentations.</p>
+<p>The <code>mimosa</code> package trains and makes predictions from the MIMoSA method. Access to the full papers can be found <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/jon.12506">here</a> and <a href="https://doi.org/10.1016/j.nicl.2018.10.013">here</a>. Additionally, it allows for implementation of some common segmentation metrics such as true positive rate, false positive rate, false negative rate, false positive count, and sensitivity based on lesion count.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install the package from neuroconductor, type:</p>
+<p>To install the package from Neuroconductor, type:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"https://neuroconductor.org/neurocLite.R"</span>)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">neuro_install</span>(<span class="st">"mimosa"</span>)</a></code></pre></div>
 <p>To get the latest development version from GitHub:</p>
@@ -91,160 +91,16 @@
 <!-- [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/muschellij2/mimosa?branch=master&svg=true)](https://ci.appveyor.com/project/muschellij2/mimosa) -->
 <p><a href="https://coveralls.io/r/muschellij2/mimosa?branch=master"><img src="https://coveralls.io/repos/github/muschellij2/mimosa/badge.svg" alt="Coverage status"></a></p>
 </div>
+<div id="package-documentation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#package-documentation" class="anchor"></a>Package Documentation</h2>
+<p>Check out our <code>pkgdown</code> site <a href="https://avalcarcel9.github.io/mimosa/">here</a>.</p>
+<p>Full functions and documentation references are available <a href="https://avalcarcel9.github.io/mimosa/reference/index.html">here</a>.</p>
+</div>
 <div id="vignette" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vignette" class="anchor"></a>Vignette</h2>
-<p>For a full implementation of the methods with output please see our <a href="https://github.com/avalcarcel9/mimosa/blob/master/vignettes/mimosa_git.md">vignette</a>.</p>
-</div>
-<div id="functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#functions" class="anchor"></a>Functions</h2>
-<p>Below is a list of the functions and a description of options available to utilize through the <code>mimosa</code> package.</p>
-<div id="count_stats" class="section level3">
-<h3 class="hasAnchor">
-<a href="#count_stats" class="anchor"></a>count_stats</h3>
-<p>This function calculates true positive rate, false positive rate, false negative rate, false positive count, and sensitivity.</p>
-<p>Formulas for how these are calculated are provided in the ‘Evaluate Performance’ section.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="reference/count_stats.html">count_stats</a></span>(gold_standard, </a>
-<a class="sourceLine" id="cb3-2" title="2">            predicted_segmentation, </a>
-<a class="sourceLine" id="cb3-3" title="3">            k, </a>
-<a class="sourceLine" id="cb3-4" title="4">            <span class="dt">percent_overlap =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb3-5" title="5">            <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<p><em>Arguments</em></p>
-<ul>
-<li>
-<code>gold_standard</code> Gold standard segmentation mask of class <code>nifti</code>
-</li>
-<li>
-<code>predicted_segmentation</code> Predicted segmentation mask volume of class <code>nifti</code>
-</li>
-<li>
-<code>k</code> Minimum number of voxels for a segmentation cluster/component</li>
-<li>
-<code>percent_overlap</code> Proportion of gold standard segmentation to be overlapped by predicted</li>
-<li>
-<code>verbose</code> Logical indicating printing diagnostic output</li>
-</ul>
-</div>
-<div id="mimosa_data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#mimosa_data" class="anchor"></a>mimosa_data</h3>
-<p>This function creates the training vectors from a single MRI study that has FLAIR, T1, T2, and PD volumes. When utilizing the function for training you will also need gold standard binary segmentation mask. The function can create a tissue mask (or the user can supply a brain mask), a binary mask of candidate voxels for lesion segmentation, smoothed volumes, and coupling maps. The user may supply already normalized data if they wish to use an alternative normalization method.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw"><a href="reference/mimosa_data.html">mimosa_data</a></span>(brain_mask, </a>
-<a class="sourceLine" id="cb4-2" title="2">            FLAIR, </a>
-<a class="sourceLine" id="cb4-3" title="3">            T1, </a>
-<a class="sourceLine" id="cb4-4" title="4">            <span class="dt">T2 =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb4-5" title="5">            <span class="dt">PD =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb4-6" title="6">            <span class="dt">tissue =</span> <span class="ot">FALSE</span>, </a>
-<a class="sourceLine" id="cb4-7" title="7">            <span class="dt">gold_standard =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb4-8" title="8">            <span class="dt">normalize =</span> <span class="st">'no'</span>, </a>
-<a class="sourceLine" id="cb4-9" title="9">            <span class="dt">cand_mask =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb4-10" title="10">            <span class="dt">slices =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb4-11" title="11">            <span class="dt">orientation =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"axial"</span>, <span class="st">"coronal"</span>, <span class="st">"sagittal"</span>), </a>
-<a class="sourceLine" id="cb4-12" title="12">            <span class="dt">cores =</span> <span class="dv">1</span>, </a>
-<a class="sourceLine" id="cb4-13" title="13">            <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<p><em>Arguments</em></p>
-<ul>
-<li>
-<code>brain_mask</code> brain or tissue mask of class <code>nifti</code>
-</li>
-<li>
-<code>FLAIR</code> volume of class <code>nifti</code>
-</li>
-<li>
-<code>T1</code> volume of class <code>nifti</code>
-</li>
-<li>
-<code>T2</code> volume of class <code>nifti</code>. If not available use <code>NULL</code>.</li>
-<li>
-<code>PD</code> volume of class <code>nifti</code>. If not available use <code>NULL</code>.</li>
-<li>
-<code>tissue</code> is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be <code>FALSE</code> unless you provide the tissue mask as the brain_mask object</li>
-<li>
-<code>gold_standard</code> gold standard lesion segmentation mask of class <code>nifti</code>
-</li>
-<li>
-<code>normalize</code> by default is ‘no’ will not normalize images. To normalize images use inputs ‘Z’ for z-score normalization slices vector of desired slices to train on, for WhiteStripe use ‘WS’</li>
-<li>
-<code>cand_mask</code> is <code>NULL</code> to use candidate mask procedure proposed with method or a <code>nifti</code> object to be used as the candidate mask</li>
-<li>
-<code>slices</code> vector of desired slices to train on, if <code>NULL</code> then train over the entire brain mask</li>
-<li>
-<code>orientation</code> string value telling which orientation the training slices are specified in, can take the values of “axial”,“coronal”, and “sagittal”,</li>
-<li>
-<code>cores</code> 1 numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)</li>
-<li>
-<code>verbose</code> logical indicating printing diagnostic output</li>
-</ul>
-</div>
-<div id="mimosa_training" class="section level3">
-<h3 class="hasAnchor">
-<a href="#mimosa_training" class="anchor"></a>mimosa_training</h3>
-<p>This function trains the MIMoSA model from the data frames produced by <code>mimosa_data</code> on all subjects and determines an optimal threshold based on training data.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw"><a href="reference/mimosa_training.html">mimosa_training</a></span>(brain_mask, </a>
-<a class="sourceLine" id="cb5-2" title="2">                FLAIR, </a>
-<a class="sourceLine" id="cb5-3" title="3">                T1, </a>
-<a class="sourceLine" id="cb5-4" title="4">                <span class="dt">T2 =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb5-5" title="5">                <span class="dt">PD =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb5-6" title="6">                <span class="dt">tissue =</span> <span class="ot">FALSE</span>, </a>
-<a class="sourceLine" id="cb5-7" title="7">                gold_standard, </a>
-<a class="sourceLine" id="cb5-8" title="8">                <span class="dt">normalize =</span> <span class="st">'no'</span>, </a>
-<a class="sourceLine" id="cb5-9" title="9">                <span class="dt">slices =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb5-10" title="10">                <span class="dt">orientation =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"axial"</span>, <span class="st">"coronal"</span>, <span class="st">"sagittal"</span>), </a>
-<a class="sourceLine" id="cb5-11" title="11">                <span class="dt">cores =</span> <span class="dv">1</span>, </a>
-<a class="sourceLine" id="cb5-12" title="12">                <span class="dt">verbose =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb5-13" title="13">                <span class="dt">outdir =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb5-14" title="14">                <span class="dt">optimal_threshold =</span> <span class="ot">NULL</span>)</a></code></pre></div>
-<p><em>Arguments</em></p>
-<ul>
-<li>
-<code>brain_mask</code> vector of full path to brain mask</li>
-<li>
-<code>FLAIR</code> <code>vector</code> of full path to FLAIR</li>
-<li>
-<code>T1</code> <code>vector</code> of full path to T1</li>
-<li>
-<code>T2</code> <code>vector</code> of full path to T2 if available. If not use <code>NULL</code>.</li>
-<li>
-<code>PD</code> <code>vector</code> of full path to PD if available. If not use <code>NULL</code>.</li>
-<li>
-<code>tissue</code> is a logical value that determines whether the brain mask is a full brain mask or tissue mask (excludes CSF), should be <code>FALSE</code> unless you provide the tissue mask as the <code>brain_mask</code> object</li>
-<li>
-<code>gold_standard</code> vector of full path to gold standard segmentations. Typically manually segmented images.</li>
-<li>
-<code>normalize</code> by default is ‘no’ will not normalize images. To normalize images use inputs ‘Z’ for z-score normalization slices vector of desired slices to train on, for WhiteStripe use ‘WS’</li>
-<li>
-<code>orientation</code> if <code>NULL</code> then train over the entire brain mask orientation string value telling which orientation the training slices are specified in, can take the values of “axial”, “sagittal”, or “coronal”</li>
-<li>
-<code>cores</code> numeric indicating the number of cores to be used (no more than 4 is useful for this software implementation)</li>
-<li>
-<code>verbose</code> logical indicating printing diagnostic output</li>
-<li>
-<code>outdir</code> vector of paths/IDs to be pasted to objects that will be saved. <code>NULL</code> if objects are not to be saved</li>
-<li>
-<code>optimal_threshold = NULL</code>. To run algorithm provide vector of thresholds</li>
-</ul>
-</div>
-</div>
-<div id="pre-trained-models" class="section level2">
-<h2 class="hasAnchor">
-<a href="#pre-trained-models" class="anchor"></a>Pre-Trained Models</h2>
-<p>The method performs best when trained on data. Since gold standard manual segmentations are not always delineated though through the <code>mimosa</code> package we have trained four (4) distinct models for use. These models can be called and are stored under the following names:</p>
-<ul>
-<li>
-<code>mimosa_model</code> trained using FLAIR, T1, T2, and PD imaging modalities</li>
-<li>
-<code>mimosa_model_No_PD</code> trained using FLAIR, T1, and T2 imaging modalities</li>
-<li>
-<code>mimosa_model_No_T2</code> trained using FLAIR, T1, and PD imaging modalities</li>
-<li>
-<code>mimosa_model_No_PD_T2</code> trained using FLAIR and T1 imaging modalities</li>
-</ul>
-<p>Users should use the model which matches their imaging sequence. For example, if you only have data collected for FLAIR and T1 modalities then you should use the <code>mimosa_model_No_PD_No_T2</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">mimosa_model</a>
-<a class="sourceLine" id="cb6-2" title="2">mimosa_model_No_PD</a>
-<a class="sourceLine" id="cb6-3" title="3">mimosa_model_No_T2</a>
-<a class="sourceLine" id="cb6-4" title="4">mimosa_model_No_PD_No_T2</a></code></pre></div>
+<p>For a full implementation of the methods with output please see our <a href="https://avalcarcel9.github.io/mimosa/articles/mimosa.html">vignette</a>.</p>
 </div>
 </div>
   </div>
